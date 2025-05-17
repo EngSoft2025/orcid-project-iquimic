@@ -72,7 +72,7 @@
     --border: 150 15% 25%;
     --input: 150 15% 25%;
     --ring: 150 50% 50%;
-
+    
     --sidebar-background: 150 15% 15%;
     --sidebar-foreground: 150 10% 90%;
     --sidebar-primary: 150 50% 40%;
@@ -82,19 +82,15 @@
     --sidebar-border: 150 15% 25%;
     --sidebar-ring: 150 50% 50%;
   }
+}
 
+@layer base {
   * {
-    @apply border border-border;
+    @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-@layer utilities {
-  .border-border {
-    border-color: hsl(var(--border));
   }
 }
 
