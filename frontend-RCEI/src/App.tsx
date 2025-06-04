@@ -13,6 +13,8 @@ import Network from "./pages/Network";
 import Projects from "./pages/Projects";
 import Reviews from "./pages/Reviews";
 import Settings from "./pages/Settings";
+import UserRegisterPage from "./pages/userRegisterPage";
+import AutoCadastro from "./pages/AutoCadastro";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/projects" element={<Projects />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/register" element={<UserRegisterPage />} />
+          <Route path="/selfregister" element={<AutoCadastro />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

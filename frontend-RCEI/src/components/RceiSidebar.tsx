@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { 
+import {
   BookOpen,
   BarChart3,
   FileText,
@@ -12,7 +12,8 @@ import {
   Settings,
   Menu,
   X,
-  Home
+  Home,
+  UserPlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -64,6 +65,11 @@ const sidebarItems: SidebarItem[] = [
     label: "Configurações",
     href: "/settings",
   },
+  {
+    icon: UserPlus,
+    label: "Cadastro de Usuários",
+    href: "/register",
+  },
 ];
 
 export function RceiSidebar() {
@@ -83,7 +89,7 @@ export function RceiSidebar() {
 
   return (
     <>
-      <button 
+      <button
         onClick={toggleSidebar}
         className="fixed top-4 left-4 z-50 bg-rcei-green-100 hover:bg-rcei-green-200 text-rcei-green-700 p-2 rounded-md transition-colors lg:hidden"
         aria-label="Toggle sidebar"
@@ -91,7 +97,7 @@ export function RceiSidebar() {
         {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      <div 
+      <div
         className={cn(
           "fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-200",
           isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -110,7 +116,7 @@ export function RceiSidebar() {
         <div className="px-4 py-6 flex items-center justify-between border-b border-sidebar-border">
           <div className="flex items-center gap-3">
             <BookOpen className="h-8 w-8 text-rcei-green-500" />
-            <span 
+            <span
               className={cn(
                 "font-bold text-xl transition-opacity duration-200",
                 isCollapsed && !isMobile ? "opacity-0 w-0" : "opacity-100"
@@ -155,7 +161,7 @@ export function RceiSidebar() {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border">
-          <div 
+          <div
             className={cn(
               "flex items-center gap-3 px-3 py-2",
               isCollapsed && !isMobile && "justify-center"
@@ -164,7 +170,7 @@ export function RceiSidebar() {
             <div className="h-8 w-8 rounded-full bg-rcei-green-200 flex items-center justify-center text-rcei-green-700 font-semibold">
               U
             </div>
-            <div 
+            <div
               className={cn(
                 "transition-opacity duration-200",
                 isCollapsed && !isMobile ? "opacity-0 w-0" : "opacity-100"
@@ -177,7 +183,7 @@ export function RceiSidebar() {
         </div>
       </aside>
 
-      <div 
+      <div
         className={cn(
           "transition-all duration-300 ease-in-out",
           isCollapsed && !isMobile ? "ml-16" : "ml-0 lg:ml-64"
