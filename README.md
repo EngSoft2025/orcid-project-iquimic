@@ -3,7 +3,7 @@
 ## Integrantes do Grupo
 - Tiago Chaves Bezerra Rocha - 14609637
 - Felipe da Costa Coqueiro - 11781361
-- 
+- Gustavo de Araújo Poffo - 13672849
 
 ---
 
