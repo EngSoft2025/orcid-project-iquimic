@@ -28,7 +28,7 @@ const sidebarItems: SidebarItem[] = [
   {
     icon: Home,
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
   },
   {
     icon: BarChart3,
