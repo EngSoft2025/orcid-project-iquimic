@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogIn, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function OrcidSignupPage() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         nome: "",
         email: "",
@@ -22,6 +24,7 @@ export default function OrcidSignupPage() {
         e.preventDefault();
         alert(`Cadastro realizado para: ${formData.nome} (${formData.email})`);
         setFormData({ nome: "", email: "", senha: "" });
+        navigate("/dashboard");
     };
 
     return (
@@ -49,7 +52,7 @@ export default function OrcidSignupPage() {
                             <Button
                                 className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-xl"
                                 onClick={() => {
-                                    window.location.href = "/api/auth/orcid";
+                                    window.location.href = "/";
                                 }}
                             >
                                 <LogIn className="w-4 h-4 mr-2" />

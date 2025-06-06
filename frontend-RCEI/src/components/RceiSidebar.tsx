@@ -115,7 +115,9 @@ export function RceiSidebar() {
       >
         <div className="px-4 py-6 flex items-center justify-between border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <BookOpen className="h-8 w-8 text-rcei-green-500" />
+            <Link to="/" className="flex items-center gap-3 hover:cursor-pointer">
+              <BookOpen className="h-8 w-8 text-rcei-green-500" />
+            </Link>
             <span
               className={cn(
                 "font-bold text-xl transition-opacity duration-200",

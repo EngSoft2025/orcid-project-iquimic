@@ -13,7 +13,7 @@ import Network from "./pages/Network";
 import Projects from "./pages/Projects";
 import Reviews from "./pages/Reviews";
 import Settings from "./pages/Settings";
-import UserRegisterPage from "./pages/userRegisterPage";
+import UserRegisterPage from "./pages/UserRegisterPage";
 import AutoCadastro from "./pages/AutoCadastro";
 
 const queryClient = new QueryClient();
@@ -25,7 +25,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<AutoCadastro />} />
+          <Route path="/dashboard" element={<Index />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/search" element={<Search />} />
           <Route path="/publications" element={<Publications />} />
@@ -34,7 +35,6 @@ const App = () => (
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/register" element={<UserRegisterPage />} />
-          <Route path="/selfregister" element={<AutoCadastro />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
