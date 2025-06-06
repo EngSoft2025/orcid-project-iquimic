@@ -30,10 +30,6 @@ _Descrição:_ Funcionalidades e atores principais do sistema.
 _Descrição:_ Entidades, atributos e relacionamentos do sistema.  
 ![Diagrama de Classes](./Documents/diagrama_classes.png)  
 
-### Diagrama de Sequência  
-_Descrição:_ Sequência temporal de interações para um caso de uso.  
-![Diagrama de Sequência](./Documents/diagrama_sequencia.png)  
-
 ### Diagrama de Atividades  
 _Descrição:_ Fluxo de trabalho e decisões no sistema.  
 ![Diagrama de Atividades](./Documents/diagrama_atividades.png)  
@@ -58,4 +54,85 @@ Confira o protótipo interativo no Figma:
 
 ---
 
+## Executando o Projeto
 
+Este projeto foi desenvolvido utilizando React com TypeScript.  Siga as instruções abaixo para executá-lo localmente:
+
+### Pré-requisitos
+
+Certifique-se de ter o Node.js e o npm (ou yarn) instalados em seu sistema.  Você pode verificar se já os tem, executando os seguintes comandos no terminal:
+
+```bash
+node -v
+npm -v  # Ou yarn -v se preferir yarn
+```
+
+Se não tiver o Node.js instalado, você pode baixá-lo em [https://nodejs.org/](https://nodejs.org/).  A instalação do Node.js geralmente inclui o npm.
+
+### Passos para Executar
+
+1.  **Clone o repositório:**
+
+    ```bash
+    git clone [URL do seu repositório]
+    cd Frontend-RCEI
+    ```
+
+2.  **Instale as dependências:**
+
+    ```bash
+    npm install  # Ou yarn install
+    ```
+    Este comando irá instalar todas as dependências listadas no arquivo `package.json`.
+
+3.  **Configure as variáveis de ambiente (se necessário):**
+
+    Se o projeto utilizar variáveis de ambiente (por exemplo, chaves de API), crie um arquivo `.env` na raiz do projeto e defina as variáveis necessárias.  Exemplo:
+
+    ```
+    REACT_APP_API_KEY=sua_chave_api
+    ```
+
+    Certifique-se de que este arquivo esteja adicionado ao `.gitignore` para evitar o commit de informações sensíveis.
+
+4.  **Execute o projeto:**
+
+    ```bash
+    npm start  # Ou yarn start
+    ```
+
+    Este comando irá iniciar o servidor de desenvolvimento do React.  Normalmente, o projeto estará disponível em `http://localhost:3000`.
+
+### Outros Comandos Úteis
+
+*   **Build para produção:**
+
+    ```bash
+    npm run build  # Ou yarn build
+    ```
+    Este comando criará uma versão otimizada do projeto para produção na pasta `build`.
+
+*   **Executar testes:**
+
+    ```bash
+    npm test  # Ou yarn test
+    ```
+
+*   **Executar o linter:**
+
+    ```bash
+    npm run lint  # Ou yarn lint (se você tiver um script "lint" definido no package.json)
+    ```
+
+### Notas Adicionais
+
+*   Certifique-se de que as configurações em `vite.config.ts`, `tailwind.config.ts`, `tsconfig.json`, etc., estejam corretas para o seu ambiente.
+*   Se você tiver problemas com dependências, tente limpar o cache do npm/yarn:
+
+    ```bash
+    npm cache clean --force  # Ou yarn cache clean
+    rm -rf node_modules  # Remova a pasta node_modules
+    npm install  # Ou yarn install novamente
+    ```
+
+*   Consulte a documentação do Create React App (ou Vite, dependendo de como o projeto foi criado) para obter informações adicionais sobre configuração e deployment: [https://create-react-app.dev/](https://create-react-app.dev/) (se Create React App) ou [https://vitejs.dev/](https://vitejs.dev/) (se Vite).
