@@ -65,11 +65,12 @@ const sidebarItems: SidebarItem[] = [
     label: "Configurações",
     href: "/settings",
   },
-  {
+
+  /*{
     icon: UserPlus,
     label: "Cadastro de Usuários",
     href: "/register",
-  },
+  },*/
 ];
 
 export function RceiSidebar() {

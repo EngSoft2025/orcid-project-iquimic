@@ -78,7 +78,7 @@ export default function OrcidSignupPage() {
                     <Card className="rounded-2xl shadow-xl border border-slate-200">
                         <CardHeader className="text-center">
                             <CardTitle className="text-2xl font-semibold text-slate-700">
-                                Cadastro Manual
+                                Login
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -115,7 +115,7 @@ export default function OrcidSignupPage() {
                                     className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-xl flex justify-center items-center"
                                 >
                                     <UserPlus className="w-4 h-4 mr-2" />
-                                    Cadastrar
+                                    Entrar
                                 </Button>
                             </form>
                         </CardContent>
