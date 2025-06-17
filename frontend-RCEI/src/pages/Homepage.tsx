@@ -1,217 +1,209 @@
-// pages/Homepage.tsx
-import { RceiLayout } from "@/components/RceiLayout";
-import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MessageCircle, Zap, Users, Award } from 'lucide-react';
+
+const FeatureCard = ({ icon, title, description }: {
+    icon: React.ReactNode;
+    title: string;
+    description: string
+}) => {
+    return (
+        <div className="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-green-500 w-12 h-12 rounded-full flex items-center justify-center text-white mb-5">
+                {icon}
+            </div>
+            <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>
+            <p className="text-gray-600 text-sm">{description}</p>
+        </div>
+    );
+};
+
+const TestimonialCard = ({ content, author, role, company }: {
+    content: string;
+    author: string;
+    role: string;
+    company: string
+}) => {
+    return (
+        <div className="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="mb-4">
+                <svg className="h-8 w-8 text-green-500 opacity-50" fill="currentColor" viewBox="0 0 32 32">
+                    <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+                </svg>
+            </div>
+            <p className="text-gray-700 mb-4">{content}</p>
+            <div>
+                <p className="font-semibold text-gray-800">{author}</p>
+                <p className="text-gray-500 text-sm">{role}, {company}</p>
+            </div>
+        </div>
+    );
+};
 
 const Homepage = () => {
-  const router = useRouter();
-  const [testimonials, setTestimonials] = useState([]);
+    const navigate = useNavigate();
+    const [testimonials, setTestimonials] = React.useState([
+        {
+            content: "O RCEI tem sido uma ferramenta inestimável para minha pesquisa. A interface é intuitiva e fácil de usar.",
+            author: "Maria Silva",
+            role: "Pesquisadora",
+            company: "Universidade Estadual"
+        },
+        {
+            content: "Com o RCEI, encontrei publicações relevantes que antes me passariam despercebidas.",
+            author: "Carlos Alberto",
+            role: "Professor",
+            company: "Instituto Federal"
+        },
+        {
+            content: "O RCEI me ajudou a avaliar o impacto de minhas publicações de forma rápida e precisa.",
+            author: "Ana Paula",
+            role: "Doutoranda",
+            company: "Universidade Federal"
+        }
+    ]);
 
-  useEffect(() => {
-    // Simulação de busca de depoimentos de uma API
-    const fetchTestimonials = async () => {
-      // Aqui você faria uma chamada real para sua API
-      const fakeTestimonials = [
-        { id: 1, author: "Dr. Maria Souza", text: "O RCEI revolucionou minha pesquisa!" },
-        { id: 2, author: "Prof. Carlos Silva", text: "A interface é intuitiva e o acesso à informação é rápido." },
-        { id: 3, author: "Dra. Ana Pereira", text: "Recomendo o RCEI para todos os pesquisadores." },
-        { id: 4, author: "João Oliveira", text: "Excelente ferramenta para encontrar publicações relevantes." },
-        { id: 5, author: "Mariana Santos", text: "O RCEI facilitou a avaliação de pesquisadores." },
-        { id: 6, author: "Ricardo Alves", text: "A rede de colaboração é incrível!" },
-        { id: 7, author: "Fernanda Costa", text: "As métricas de citação são muito úteis." },
-        { id: 8, author: "Lucas Rodrigues", text: "O RCEI é indispensável para minha pesquisa." },
-        { id: 9, author: "Sofia Gomes", text: "A busca é muito eficiente." },
-        { id: 10, author: "Pedro Martins", text: "A interface é moderna e fácil de usar." },
-      ];
-
-      setTestimonials(fakeTestimonials);
+    const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const searchTerm = (event.target as HTMLFormElement).search.value;
+        if (searchTerm) {
+            navigate(`/search?q=${searchTerm}`);
+        }
     };
 
-    fetchTestimonials();
-  }, []);
+    return (
+        <div className="min-h-screen flex flex-col bg-gray-50">
+            {/* Navbar (Adaptar ou Remover) */}
+            <nav className="bg-white shadow-md">
+                <div className="container mx-auto py-4 px-4">
+                    <div className="flex items-center justify-between">
+                        <Link to="/" className="text-xl font-bold text-gray-800">RCEI</Link>
+                        <div>
+                            <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">Login</Link>
+                            <Link to="/register" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Cadastre-se</Link>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const searchTerm = event.target.search.value;
-    if (searchTerm) {
-      router.push(`/search?q=${searchTerm}`);
-    }
-  };
+            <main className="flex-grow">
+                {/* Hero Section */}
+                <section className="bg-green-100 py-24">
+                    <div className="container mx-auto px-4 text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
+                            Encontre, Avalie e Conecte-se com Pesquisadores
+                        </h1>
+                        <p className="text-lg text-gray-600 mb-8">
+                            A plataforma completa para a comunidade científica.
+                        </p>
+                        <form onSubmit={handleSearch} className="max-w-lg mx-auto flex">
+                            <input
+                                type="text"
+                                name="search"
+                                placeholder="Pesquisar por nome, área de atuação, instituição..."
+                                className="w-full rounded-l-md py-3 px-4 text-gray-700 focus:outline-none"
+                                aria-label="Pesquisar"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-r-md transition-colors"
+                            >
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
+                </section>
 
-  return (
-    <RceiLayout>
-      <div className="space-y-8">
-        {/* Banner Principal */}
-        <section className="bg-indigo-600 text-white py-20 px-6 rounded-lg shadow-md">
-          <div className="container mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-4">
-              Descubra e Avalie Pesquisadores com RCEI
-            </h1>
-            <p className="text-lg mb-8">
-              Encontre informações detalhadas sobre pesquisadores, seus projetos e
-              publicações. Avalie a qualidade e o impacto de suas contribuições.
-            </p>
-            <form onSubmit={handleSearch} className="flex justify-center">
-              <input
-                type="text"
-                name="search"
-                placeholder="Pesquisar pesquisadores, áreas de interesse..."
-                className="w-full md:w-2/3 px-4 py-2 rounded-l-md text-gray-700 focus:outline-none"
-                aria-label="Pesquisar"
-              />
-              <button type="submit" className="bg-indigo-700 hover:bg-indigo-800 px-6 py-2 rounded-r-md font-semibold">
-                Buscar
-              </button>
-            </form>
-          </div>
-        </section>
+                {/* Features Section */}
+                <section className="py-16 bg-gray-50">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-xl mx-auto text-center mb-14">
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
+                                Descubra o Poder do RCEI
+                            </h2>
+                            <p className="text-gray-600">
+                                Ferramentas inovadoras para pesquisadores e instituições.
+                            </p>
+                        </div>
 
-        {/* Seções de Destaque */}
-        <section className="container mx-auto">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Como Funciona o RCEI
-          </h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {/* Encontre Pesquisadores */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-                Encontre Pesquisadores
-              </h3>
-              <p className="text-gray-600">
-                Use nossa poderosa ferramenta de busca para encontrar pesquisadores
-                por nome, área de atuação, instituição e muito mais.
-              </p>
-              <a href="/search" className="text-indigo-500 hover:text-indigo-700 mt-2 block">Explore a Busca →</a>
-              <ul className="mt-4 list-disc list-inside text-sm text-gray-500">
-                <li>Busca por nome</li>
-                <li>Busca por área de atuação</li>
-                <li>Busca por instituição</li>
-                <li>Filtros avançados</li>
-                <li>Resultados relevantes</li>
-              </ul>
-            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <FeatureCard
+                                icon={<Zap size={24} />}
+                                title="Busca Inteligente"
+                                description="Encontre pesquisadores e publicações de forma rápida e precisa."
+                            />
+                            <FeatureCard
+                                icon={<Users size={24} />}
+                                title="Rede de Colaboração"
+                                description="Conecte-se com outros pesquisadores e amplie sua rede de contatos."
+                            />
+                            <FeatureCard
+                                icon={<Award size={24} />}
+                                title="Métricas de Impacto"
+                                description="Avalie o impacto de suas publicações e compare-se com seus pares."
+                            />
+                            <FeatureCard
+                                icon={<MessageCircle size={24} />}
+                                title="Interface Intuitiva"
+                                description="Navegue facilmente pela plataforma e encontre as informações que você precisa."
+                            />
+                        </div>
+                    </div>
+                </section>
 
-            {/* Explore Publicações */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-                Explore Publicações
-              </h3>
-              <p className="text-gray-600">
-                Acesse um vasto banco de dados de publicações acadêmicas e
-                descubra os trabalhos mais relevantes em sua área de interesse.
-              </p>
-              <a href="/publications" className="text-indigo-500 hover:text-indigo-700 mt-2 block">Ver Publicações →</a>
-              <ul className="mt-4 list-disc list-inside text-sm text-gray-500">
-                <li>Milhões de artigos</li>
-                <li>Busca por palavra-chave</li>
-                <li>Filtros por data</li>
-                <li>Download de PDFs</li>
-                <li>Citações e referências</li>
-              </ul>
-            </div>
+                {/* Testimonials Section */}
+                <section className="py-16 bg-white">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-xl mx-auto text-center mb-14">
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
+                                O que a comunidade científica está dizendo
+                            </h2>
+                            <p className="text-gray-600">
+                                Veja como o RCEI tem ajudado pesquisadores em todo o mundo.
+                            </p>
+                        </div>
 
-            {/* Avalie e Compare */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-                Avalie e Compare
-              </h3>
-              <p className="text-gray-600">
-                Analise o impacto e a influência dos pesquisadores através de
-                métricas de citação e outras informações relevantes.
-              </p>
-              <a href="/metrics" className="text-indigo-500 hover:text-indigo-700 mt-2 block">Ver Métricas →</a>
-              <ul className="mt-4 list-disc list-inside text-sm text-gray-500">
-                <li>Índice H</li>
-                <li>Número de citações</li>
-                <li>Colaborações</li>
-                <li>Gráficos comparativos</li>
-                <li>Análise de impacto</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {testimonials.map((testimonial, index) => (
+                                <TestimonialCard
+                                    key={index}
+                                    content={testimonial.content}
+                                    author={testimonial.author}
+                                    role={testimonial.role}
+                                    company={testimonial.company}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </section>
 
-        {/* Depoimentos */}
-        <section className="container mx-auto">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            O que dizem sobre o RCEI
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="bg-gray-100 p-6 rounded-lg shadow-md text-center">
-                <p className="text-gray-700 italic">
-                  "{testimonial.text}"
-                </p>
-                <p className="text-gray-500 mt-2">- {testimonial.author}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+                {/* CTA Section */}
+                <section className="py-20 bg-gray-100">
+                    <div className="container mx-auto px-4 text-center">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-800">
+                            Comece a usar o RCEI agora mesmo!
+                        </h2>
+                        <p className="text-lg text-gray-600 mb-8">
+                            Descubra um mundo de possibilidades para sua pesquisa.
+                        </p>
+                        <Link
+                            to="/register"
+                            className="inline-flex items-center px-8 py-4 rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold text-lg transition-colors"
+                        >
+                            Cadastre-se Gratuitamente
+                        </Link>
+                    </div>
+                </section>
+            </main>
 
-        {/* Recursos Adicionais */}
-        <section className="container mx-auto">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Recursos Adicionais
-          </h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {/* Tutoriais */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-                Tutoriais
-              </h3>
-              <p className="text-gray-600">
-                Aprenda a usar o RCEI com nossos tutoriais em vídeo e guias passo a passo.
-              </p>
-              <a href="/tutorials" className="text-indigo-500 hover:text-indigo-700 mt-2 block">Ver Tutoriais →</a>
-            </div>
-
-            {/* FAQ */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-                FAQ
-              </h3>
-              <p className="text-gray-600">
-                Encontre respostas para as perguntas mais frequentes sobre o RCEI.
-              </p>
-              <a href="/faq" className="text-indigo-500 hover:text-indigo-700 mt-2 block">Acessar FAQ →</a>
-            </div>
-
-            {/* Contato */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-                Contato
-              </h3>
-              <p className="text-gray-600">
-                Entre em contato conosco para suporte técnico, sugestões e feedback.
-              </p>
-              <a href="/contact" className="text-indigo-500 hover:text-indigo-700 mt-2 block">Fale Conosco →</a>
-            </div>
-          </div>
-        </section>
-
-        {/* Chamada para Ação */}
-        <section className="bg-gray-100 py-12 px-6 rounded-lg shadow-md">
-          <div className="container mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Comece a Explorar o RCEI Hoje!
-            </h2>
-            <p className="text-lg text-gray-700 mb-8">
-              Descubra um mundo de conhecimento e oportunidades na pesquisa
-              acadêmica.
-            </p>
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md">
-              Experimente Grátis
-            </button>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="bg-gray-800 text-white py-4 text-center">
-          <p>© 2024 RCEI. Todos os direitos reservados.</p>
-        </footer>
-      </div>
-    </RceiLayout>
-  );
+            {/* Footer (Adaptar ou Remover) */}
+            <footer className="bg-gray-800 text-white py-8">
+                <div className="container mx-auto px-4 text-center">
+                    <p>© 2024 RCEI. Todos os direitos reservados.</p>
+                </div>
+            </footer>
+        </div>
+    );
 };
 
 export default Homepage;
