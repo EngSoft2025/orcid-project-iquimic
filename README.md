@@ -152,7 +152,7 @@ Preencha o arquivo com:
 
 ```bash
 VITE_ORCID_CLIENT_ID=<seu_client_id>
-VITE_ORCID_REDIRECT_URI=http://localhost:8080/callback
+VITE_ORCID_REDIRECT_URI=http://localhost:8080/auth/callback
 ```
 
 Essas variáveis são utilizadas pelo `frontend-RCEI` durante o desenvolvimento local.

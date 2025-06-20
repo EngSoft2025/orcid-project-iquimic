@@ -68,24 +68,37 @@ const loginUser = async (req, res) => {
 
 // Função para autenticação via ORCID
 const orcidLogin = async (req, res) => {
-  const { orcidId, orcidToken } = req.body;
+  const { code } = req.body;
 
   try {
-    const response = await axios.get(`https://pub.orcid.org/v3.0/${orcidId}/person`, {
+    const tokenRes = await axios.post('https://orcid.org/oauth/token', null, {
+      params: {
+        client_id: process.env.ORCID_CLIENT_ID,
+        client_secret: process.env.ORCID_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: process.env.ORCID_REDIRECT_URI,
+      },
+      headers: { 'Accept': 'application/json' }
+    });
+
+    const { access_token, orcid } = tokenRes.data;
+
+    const response = await axios.get(`https://pub.orcid.org/v3.0/${orcid}/person`, {
       headers: {
-        Authorization: `Bearer ${orcidToken}`,
+        Authorization: `Bearer ${access_token}`,
         'Accept': 'application/json',
       }
     });
 
 
-    let user = await User.findOne({ orcidId });
+    let user = await User.findOne({ orcidId: orcid });
     if (!user) {
       const given = response.data.name?.['given-names']?.value || '';
       const family = response.data.name?.['family-name']?.value || '';
       user = new User({
         nome: `${given} ${family}`.trim(),
-        orcidId,
+        orcidId: orcid,
         tipo: 'pesquisador',
       });
       await user.save();
