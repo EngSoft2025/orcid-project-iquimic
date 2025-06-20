@@ -77,7 +77,7 @@ const Homepage = () => {
             <nav className="bg-white shadow-md">
                 <div className="container mx-auto py-4 px-4">
                     <div className="flex items-center justify-between">
-                        <Link to="/" className="text-xl font-bold text-gray-800">RCEI</Link>
+                        <Link to="/" className="text-xl font-bold text-gray-800">RCEI - Repositório Científico e Educacional Integrado</Link>
                         <div>
                             <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">Login</Link>
                             <Link to="/register" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Cadastre-se</Link>
@@ -199,7 +199,7 @@ const Homepage = () => {
             {/* Footer (Adaptar ou Remover) */}
             <footer className="bg-gray-800 text-white py-8">
                 <div className="container mx-auto px-4 text-center">
-                    <p>© 2024 RCEI. Todos os direitos reservados.</p>
+                    <p>© 2025 RCEI. Todos os direitos reservados.</p>
                 </div>
             </footer>
         </div>

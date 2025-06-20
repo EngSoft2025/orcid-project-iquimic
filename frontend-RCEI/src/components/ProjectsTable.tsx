@@ -24,7 +24,7 @@ export function ProjectsTable() {
         id: String(summary["put-code"]),
         name: summary?.title?.title?.value ?? "",
         start: summary?.startDate?.year?.value,
-        members: summary?."contributors"?."contributor"?.length ?? 0,
+        members: summary?.contributors?.contributor?.length ?? 0,
       };
     }) ?? [];
 

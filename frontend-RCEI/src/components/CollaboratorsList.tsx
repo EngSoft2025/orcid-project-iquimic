@@ -40,7 +40,7 @@ export function CollaboratorsList() {
       const contribs = w?.contributors?.contributor ?? [];
       contribs.forEach((c: any) => {
         const name = c?.creditName?.value;
-        if (name && name !== c?."orcid"?.path) {
+        if (name && name !== c?.orcid?.path) {
           if (!collaboratorsMap[name]) {
             collaboratorsMap[name] = { id: name, name, collaborationCount: 0 };
           }
