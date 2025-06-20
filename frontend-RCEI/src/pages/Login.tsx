@@ -166,7 +166,7 @@ export default function LoginPage() {
             {/* Footer */}
             <footer className="bg-gray-800 text-white py-4">
                 <div className="container mx-auto px-4 text-center">
-                    <p>© 2024 RCEI. Todos os direitos reservados.</p>
+                    <p>© 2025 RCEI. Todos os direitos reservados.</p>
                 </div>
             </footer>
         </div>
