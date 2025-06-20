@@ -65,8 +65,14 @@ export default function LoginPage() {
   };
 
   const handleOrcidLogin = () => {
-    const url = `https://orcid.org/oauth/authorize?client_id=${VITE_ORCID_CLIENT_ID}&response_type=code&scope=/read-public&redirect_uri=${encodeURIComponent(VITE_ORCID_REDIRECT_URI)}`;
-    window.location.href = url;
+    const params = new URLSearchParams({
+      client_id: VITE_ORCID_CLIENT_ID,
+      response_type: "code",
+      scope: "/authenticate /read-public",
+      redirect_uri: VITE_ORCID_REDIRECT_URI,
+    });
+
+    window.location.assign(`https://orcid.org/oauth/authorize?${params.toString()}`);
   };
 
 

@@ -159,7 +159,7 @@ Essas variáveis são utilizadas pelo `frontend-RCEI` durante o desenvolvimento 
 
 ### Escopos ORCID
 
-Para que a aplicação possa consultar publicações, financiamentos e revisões de pares,
-o token obtido no login precisa incluir ao menos o escopo `/read-public`.
-Caso deseje acessar informações restritas do perfil utilize também o escopo
+Para realizar o login e consultar publicações, financiamentos e revisões de pares,
+solicite o escopo `/authenticate` juntamente com `/read-public`.
+Se precisar acessar informações restritas do perfil inclua também o escopo
 `/read-limited`.
