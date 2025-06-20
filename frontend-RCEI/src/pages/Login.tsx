@@ -5,6 +5,8 @@ import { LogIn, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 
+const { VITE_ORCID_CLIENT_ID, VITE_ORCID_REDIRECT_URI } = import.meta.env;
+
 export default function LoginPage() {
     const navigate = useNavigate();  // Hook para navegação
     const [formData, setFormData] = useState({
@@ -97,7 +99,10 @@ export default function LoginPage() {
                                 <Button
                                     className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl"
                                     onClick={() => {
-                                        // Ação de login com ORCID (aqui você pode adicionar a lógica de ORCID)
+                                        const url =
+                                            `https://orcid.org/oauth/authorize?client_id=${VITE_ORCID_CLIENT_ID}` +
+                                            `&response_type=token&scope=/read-public&redirect_uri=${encodeURIComponent(VITE_ORCID_REDIRECT_URI)}`;
+                                        window.location.href = url;
                                     }}
                                 >
                                     <LogIn className="w-4 h-4 mr-2" />
