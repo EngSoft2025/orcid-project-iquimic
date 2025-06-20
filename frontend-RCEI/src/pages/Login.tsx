@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogIn, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
     const navigate = useNavigate();  // Hook para navegação
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: "",
         senha: "",
@@ -43,7 +45,7 @@ export default function LoginPage() {
             if (response.ok) {
                 // Sucesso no login
                 alert(`Login realizado com sucesso para: ${formData.email}`);
-                localStorage.setItem('token', result.token);  // Armazenando o token no localStorage
+                login(result.token);
 
                 // Redirecionar para o dashboard
                 navigate("/dashboard");
