@@ -13,11 +13,11 @@ app.use(cors());
 app.use(express.json());
 
 // Conectar ao banco de dados MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log('MongoDB conectado'))
-  .catch(err => console.error('Erro ao conectar ao MongoDB:', err));
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log('MongoDB conectado');
+}).catch(err => {
+  console.error('Erro ao conectar ao MongoDB:', err);
+});
 
 // Rotas
 app.use('/api/auth', authRoutes);
