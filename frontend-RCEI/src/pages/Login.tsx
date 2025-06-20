@@ -64,11 +64,11 @@ export default function LoginPage() {
     setFormData({ email: "", senha: "" });
   };
 
-  const handleOrcidLogin = () => {
-    // Redireciona para a URL de autenticação do ORCID
+    const handleOrcidLogin = () => {
     const url = `https://orcid.org/oauth/authorize?client_id=${VITE_ORCID_CLIENT_ID}&response_type=token&scope=/read-public&redirect_uri=${encodeURIComponent(VITE_ORCID_REDIRECT_URI)}`;
     window.location.href = url;
-  };
+    };
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
