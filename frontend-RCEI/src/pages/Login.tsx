@@ -12,6 +12,8 @@ export default function LoginPage() {
         senha: "",
     });
 
+    const authUrl = `https://orcid.org/oauth/authorize?client_id=${import.meta.env.VITE_ORCID_CLIENT_ID}&response_type=token&scope=/authenticate&redirect_uri=${import.meta.env.VITE_ORCID_REDIRECT_URI}`;
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
@@ -63,8 +65,7 @@ export default function LoginPage() {
                                 <Button
                                     className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl"
                                     onClick={() => {
-                                        // Substitua "/" pela URL correta de autenticação ORCID
-                                        window.location.href = "/";
+                                        window.location.href = authUrl;
                                     }}
                                 >
                                     <LogIn className="w-4 h-4 mr-2" />

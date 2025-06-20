@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Homepage from "./pages/Homepage";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Index />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/search" element={<Search />} />
           <Route path="/publications" element={<Publications />} />
