@@ -7,13 +7,11 @@ export default function AuthCallback() {
     const { login } = useAuth();
 
     useEffect(() => {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const orcidToken = params.get("access_token");
-        const orcidId = params.get("orcid");
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
 
         async function authenticate() {
-            if (!orcidToken || !orcidId) {
+            if (!code) {
                 navigate("/login");
                 return;
             }
@@ -25,8 +23,7 @@ export default function AuthCallback() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        orcidId,
-                        orcidToken,
+                        code,
                     }),
                 });
 
