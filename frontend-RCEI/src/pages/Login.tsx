@@ -6,25 +6,57 @@ import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigate();  // Hook para navegação
     const [formData, setFormData] = useState({
         email: "",
         senha: "",
     });
 
-    const authUrl = `https://orcid.org/oauth/authorize?client_id=${import.meta.env.VITE_ORCID_CLIENT_ID}&response_type=token&scope=/authenticate&redirect_uri=${import.meta.env.VITE_ORCID_REDIRECT_URI}`;
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Aqui você faria a chamada à API para autenticação
-        console.log(`Tentativa de login para: ${formData.email}`); //Remova essa linha
-        // Simulação de sucesso no login (para fins de exemplo)
-        alert(`Login realizado para: ${formData.email}`);
-        navigate("/dashboard");
+
+        // Validar se o e-mail e a senha são fornecidos
+        if (!formData.email || !formData.senha) {
+            alert("Por favor, preencha todos os campos.");
+            return;
+        }
+
+        try {
+            // Fazendo a requisição para a API de login do backend
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    senha: formData.senha,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Sucesso no login
+                alert(`Login realizado com sucesso para: ${formData.email}`);
+                localStorage.setItem('token', result.token);  // Armazenando o token no localStorage
+
+                // Redirecionar para o dashboard
+                navigate("/dashboard");
+            } else {
+                // Caso haja erro na autenticação
+                alert(result.error || "Erro ao realizar login");
+            }
+        } catch (error) {
+            console.error('Erro ao fazer o login:', error);
+            alert('Erro ao se conectar ao servidor');
+        }
+
+        // Limpar o formulário
         setFormData({ email: "", senha: "" });
     };
 
@@ -65,15 +97,14 @@ export default function LoginPage() {
                                 <Button
                                     className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl"
                                     onClick={() => {
-                                        window.location.href = authUrl;
+                                        // Ação de login com ORCID (aqui você pode adicionar a lógica de ORCID)
                                     }}
                                 >
                                     <LogIn className="w-4 h-4 mr-2" />
                                     Conectar com ORCID
                                 </Button>
                                 <div className="mt-6 text-center text-xs text-gray-500">
-                                    ORCID é uma plataforma que permite identificar pesquisadores de
-                                    forma única.
+                                    ORCID é uma plataforma que permite identificar pesquisadores de forma única.
                                 </div>
                             </CardContent>
                         </Card>

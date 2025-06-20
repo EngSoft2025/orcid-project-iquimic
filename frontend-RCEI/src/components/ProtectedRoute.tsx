@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from "@/contexts/AuthContext";  // Verifique se o caminho está correto
 
 export default function ProtectedRoute({ children }: { children: ReactElement }) {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();  // Usando 'isAuthenticated' para verificar se o usuário está autenticado
 
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return children;  // Se o usuário estiver autenticado, renderiza o conteúdo protegido
 }

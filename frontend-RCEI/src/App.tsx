@@ -16,8 +16,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Homepage from "./pages/Homepage";
 import AuthCallback from "./pages/AuthCallback";
-import { AuthProvider } from "@/hooks/useAuth";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { AuthProvider } from "@/contexts/AuthContext";  // Verifique se o caminho está correto
+import ProtectedRoute from "@/components/ProtectedRoute";  // Verifique se o caminho está correto
 
 const queryClient = new QueryClient();
 

@@ -1,16 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getOrcidToken, setOrcidToken, clearOrcidToken } from '@/services/auth';
 
-interface AuthState {
-  token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-}
+const AuthContext = createContext();
 
-const AuthContext = createContext<AuthState | undefined>(undefined);
-
-export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(null);
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     const stored = getOrcidToken();
@@ -19,7 +13,10 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
   }, []);
 
-  const login = (newToken: string) => {
+  // Calcule a autenticação com base na presença do token
+  const isAuthenticated = token !== null;
+
+  const login = (newToken) => {
     setOrcidToken(newToken);
     setToken(newToken);
   };
@@ -30,16 +27,16 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

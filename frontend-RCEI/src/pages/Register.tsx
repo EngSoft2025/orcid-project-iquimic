@@ -28,17 +28,40 @@ export default function RegisterPage() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.senha !== formData.confirmarSenha) {
             alert("As senhas não conferem.");
             return;
         }
-        // Aqui você faria a chamada à API para cadastrar o usuário
-        console.log(`Tentativa de cadastro para: ${formData.email}`); //Remova essa linha
-        // Simulação de sucesso no cadastro (para fins de exemplo)
-        alert(`Cadastro realizado para: ${formData.nome} (${formData.email})`);
-        navigate("/login");
+
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: formData.nome,
+                    email: formData.email,
+                    senha: formData.senha,
+                    confirmarSenha: formData.confirmarSenha,
+                    tipo: 'aluno',  // você pode alterar para o tipo desejado
+                }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(`Cadastro realizado para: ${formData.nome} (${formData.email})`);
+                navigate("/login");
+            } else {
+                alert(result.error || 'Erro ao cadastrar usuário');
+            }
+        } catch (error) {
+            console.error('Erro de rede:', error);
+            alert('Erro ao se conectar com o servidor');
+        }
+
         setFormData({ nome: "", email: "", senha: "", confirmarSenha: "" });
     };
 
