@@ -1,5 +1,7 @@
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { searchResearchers } from "@/services/orcid";
 import { RceiLayout } from "@/components/RceiLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,86 +9,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DashboardCard } from "@/components/ui/dashboard-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Search as SearchIcon, BookOpen, User, Book } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface Researcher {
-  id: string;
-  name: string;
-  institution: string;
-  area: string;
-  publications: number;
-  hIndex: number;
-  avatar?: string;
-}
-
-interface Publication {
-  id: string;
-  title: string;
-  authors: string[];
-  journal: string;
-  year: number;
-  citations: number;
-}
-
-const mockResearchers: Researcher[] = [
-  {
-    id: "1",
-    name: "Prof. Seiji Isotani",
-    institution: "Universidade de São Paulo",
-    area: "Informática na Educação",
-    publications: 142,
-    hIndex: 24,
-  },
-  {
-    id: "2",
-    name: "Maria Silva",
-    institution: "Universidade Federal de São Carlos",
-    area: "Inteligência Artificial",
-    publications: 87,
-    hIndex: 15,
-  },
-  {
-    id: "3",
-    name: "João Santos",
-    institution: "Universidade Estadual de Campinas",
-    area: "Engenharia de Software",
-    publications: 65,
-    hIndex: 12,
-  },
-];
-
-const mockPublications: Publication[] = [
-  {
-    id: "1",
-    title: "A Systematic Review of Educational Data Mining",
-    authors: ["Seiji Isotani", "Maria Silva"],
-    journal: "IEEE Transactions on Education",
-    year: 2023,
-    citations: 12,
-  },
-  {
-    id: "2",
-    title: "Machine Learning for Educational Assessment",
-    authors: ["João Santos", "Seiji Isotani"],
-    journal: "Computers & Education",
-    year: 2022,
-    citations: 98,
-  },
-  {
-    id: "3",
-    title: "Learning Analytics: Methods and Challenges",
-    authors: ["Maria Silva", "Ana Costa"],
-    journal: "International Conference on Learning Analytics",
-    year: 2022,
-    citations: 65,
-  },
-];
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["search", searchQuery],
+    queryFn: () => searchResearchers(searchQuery),
+    enabled: false,
+  });
+
+  const results = (data as any)?.["expanded-result"] ?? [];
+  const publications = results.flatMap((r: any) => {
+    const titles = Array.isArray(r["work-title"]) ? r["work-title"] : [];
+    return titles.map((t: string, idx: number) => ({
+      id: `${r["orcid-id"]}-${idx}`,
+      title: t,
+      authors: [`${r["given-names"] ?? ""} ${r["family-names"] ?? ""}`.trim()],
+    }));
+  });
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      refetch();
+    }
+  };
 
   return (
     <RceiLayout>
@@ -99,10 +58,10 @@ const Search = () => {
         </div>
         
         <div className="bg-white p-6 rounded-lg border shadow-sm">
-          <div className="flex flex-col md:flex-row gap-4">
+          <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <SearchIcon className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
-              <Input 
+              <Input
                 placeholder="Busque por nome, instituição, área de pesquisa ou palavra-chave"
                 className="pl-9"
                 value={searchQuery}
@@ -121,11 +80,11 @@ const Search = () => {
                   <SelectItem value="projects">Projetos</SelectItem>
                 </SelectContent>
               </Select>
-              <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">
+              <Button type="submit" className="bg-rcei-green-500 hover:bg-rcei-green-600">
                 Buscar
               </Button>
             </div>
-          </div>
+          </form>
           
           <div className="flex flex-wrap gap-2 mt-4">
             <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
@@ -160,60 +119,85 @@ const Search = () => {
           </TabsList>
           
           <TabsContent value="researchers" className="space-y-4 pt-4">
-            {mockResearchers.map((researcher) => (
-              <Card key={researcher.id} className="hover:bg-muted/10 cursor-pointer transition-colors">
-                <CardContent className="flex items-center gap-4 p-5">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={researcher.avatar} />
-                    <AvatarFallback className="bg-rcei-green-100 text-rcei-green-700">
-                      {researcher.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-lg">{researcher.name}</h3>
-                    <p className="text-sm text-muted-foreground">{researcher.institution}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline">{researcher.area}</Badge>
+            {isLoading && (
+              <>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="p-5">
+                    <CardContent className="flex items-center gap-4">
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-3 w-1/3" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+
+            {error && (
+              <DashboardCard>
+                <div className="text-center py-8">Erro ao buscar pesquisadores.</div>
+              </DashboardCard>
+            )}
+
+            {!isLoading && !error &&
+              results.map((r: any) => (
+                <Card key={r["orcid-id"]} className="hover:bg-muted/10 cursor-pointer transition-colors">
+                  <CardContent className="flex items-center gap-4 p-5">
+                    <Avatar className="h-12 w-12">
+                      <AvatarFallback className="bg-rcei-green-100 text-rcei-green-700">
+                        {(r["given-names"] ?? "?").charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-lg">
+                        {`${r["given-names"] ?? ""} ${r["family-names"] ?? ""}`.trim()}
+                      </h3>
+                      {r["institution-name"] && (
+                        <p className="text-sm text-muted-foreground">
+                          {Array.isArray(r["institution-name"])
+                            ? r["institution-name"][0]
+                            : r["institution-name"]}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <p className="text-2xl font-bold">{researcher.publications}</p>
-                      <p className="text-xs text-muted-foreground">Publicações</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{researcher.hIndex}</p>
-                      <p className="text-xs text-muted-foreground">Índice H</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
           </TabsContent>
           
           <TabsContent value="publications" className="space-y-4 pt-4">
-            {mockPublications.map((publication) => (
-              <Card key={publication.id} className="hover:bg-muted/10 cursor-pointer transition-colors">
-                <CardContent className="p-5">
-                  <h3 className="font-medium">{publication.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {publication.authors.join(", ")}
-                  </p>
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs bg-rcei-blue-100 text-rcei-blue-700 px-2 py-1 rounded">
-                        {publication.journal}
-                      </span>
-                      <span className="text-xs">{publication.year}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <span className="text-sm font-medium">{publication.citations}</span>
-                      <span className="text-xs">citações</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {isLoading && (
+              <>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="p-5">
+                    <CardContent className="space-y-2">
+                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-3 w-1/3" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+
+            {error && (
+              <DashboardCard>
+                <div className="text-center py-8">Erro ao buscar publicações.</div>
+              </DashboardCard>
+            )}
+
+            {!isLoading && !error &&
+              publications.map((pub) => (
+                <Card key={pub.id} className="hover:bg-muted/10 cursor-pointer transition-colors">
+                  <CardContent className="p-5">
+                    <h3 className="font-medium">{pub.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {pub.authors.join(", ")}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
           </TabsContent>
           
           <TabsContent value="projects" className="pt-4">
