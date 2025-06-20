@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Homepage from "./pages/Homepage";
 import AuthCallback from "./pages/AuthCallback";
+import Contact from "./pages/Contact";
 import { AuthProvider } from "@/contexts/AuthContext";  // Verifique se o caminho está correto
 import ProtectedRoute from "@/components/ProtectedRoute";  // Verifique se o caminho está correto
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/" element={<Homepage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/contact" element={<Contact />} /> 
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
