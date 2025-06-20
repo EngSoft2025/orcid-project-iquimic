@@ -1,5 +1,5 @@
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchResearchers } from "@/services/orcid";
 import { RceiLayout } from "@/components/RceiLayout";
@@ -13,11 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search as SearchIcon, BookOpen, User, Book } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSearchParams } from "react-router-dom";
 
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [searchParams] = useSearchParams();
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   const {
     data,
@@ -27,8 +30,16 @@ const Search = () => {
   } = useQuery({
     queryKey: ["search", searchQuery],
     queryFn: () => searchResearchers(searchQuery),
-    enabled: false,
+    enabled: shouldFetch && !!searchQuery,
   });
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setSearchQuery(q);
+      setShouldFetch(true);
+    }
+  }, [searchParams]);
 
   const results = (data as any)?.["expanded-result"] ?? [];
   const publications = results.flatMap((r: any) => {
@@ -43,6 +54,7 @@ const Search = () => {
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setShouldFetch(true);
       refetch();
     }
   };
