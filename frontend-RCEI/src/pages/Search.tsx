@@ -1,5 +1,5 @@
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchResearchers } from "@/services/orcid";
 import { RceiLayout } from "@/components/RceiLayout";
@@ -13,11 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search as SearchIcon, BookOpen, User, Book } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSearchParams } from "react-router-dom";
 
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [searchParams] = useSearchParams();
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   const {
     data,
@@ -27,8 +30,16 @@ const Search = () => {
   } = useQuery({
     queryKey: ["search", searchQuery],
     queryFn: () => searchResearchers(searchQuery),
-    enabled: false,
+    enabled: shouldFetch && !!searchQuery,
   });
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setSearchQuery(q);
+      setShouldFetch(true);
+    }
+  }, [searchParams]);
 
   const results = (data as any)?.["expanded-result"] ?? [];
   const publications = results.flatMap((r: any) => {
@@ -40,9 +51,15 @@ const Search = () => {
     }));
   });
 
+  const filteredResults =
+    filter === "researchers" || filter === "all" ? results : [];
+  const filteredPublications =
+    filter === "publications" || filter === "all" ? publications : [];
+
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setShouldFetch(true);
       refetch();
     }
   };
@@ -108,13 +125,13 @@ const Search = () => {
         <Tabs defaultValue="researchers" className="w-full">
           <TabsList>
             <TabsTrigger value="researchers" className="flex items-center gap-1">
-              <User className="h-4 w-4" /> Pesquisadores
+              <User className="h-4 w-4" /> Pesquisadores ({filteredResults.length})
             </TabsTrigger>
             <TabsTrigger value="publications" className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" /> Publicações
+              <BookOpen className="h-4 w-4" /> Publicações ({filteredPublications.length})
             </TabsTrigger>
             <TabsTrigger value="projects" className="flex items-center gap-1">
-              <Book className="h-4 w-4" /> Projetos
+              <Book className="h-4 w-4" /> Projetos (0)
             </TabsTrigger>
           </TabsList>
           
@@ -142,7 +159,7 @@ const Search = () => {
             )}
 
             {!isLoading && !error &&
-              results.map((r: any) => (
+              filteredResults.map((r: any) => (
                 <Card key={r["orcid-id"]} className="hover:bg-muted/10 cursor-pointer transition-colors">
                   <CardContent className="flex items-center gap-4 p-5">
                     <Avatar className="h-12 w-12">
@@ -188,7 +205,7 @@ const Search = () => {
             )}
 
             {!isLoading && !error &&
-              publications.map((pub) => (
+              filteredPublications.map((pub) => (
                 <Card key={pub.id} className="hover:bg-muted/10 cursor-pointer transition-colors">
                   <CardContent className="p-5">
                     <h3 className="font-medium">{pub.title}</h3>
