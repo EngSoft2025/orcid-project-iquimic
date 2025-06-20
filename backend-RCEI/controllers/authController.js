@@ -58,22 +58,23 @@ const loginUser = async (req, res) => {
 
 // Função para autenticação via ORCID
 const orcidLogin = async (req, res) => {
-  const { orcidToken } = req.body;
+  const { orcidId, orcidToken } = req.body;
 
   try {
-    const response = await axios.get(`https://pub.orcid.org/v3.0/${orcidToken}/person`, {
+    const response = await axios.get(`https://pub.orcid.org/v3.0/${orcidId}/person`, {
       headers: {
         Authorization: `Bearer ${orcidToken}`,
         'Accept': 'application/json',
       }
     });
 
-    const orcidId = response.data.orcidIdentifier.path;
 
     let user = await User.findOne({ orcidId });
     if (!user) {
+      const given = response.data.name?.['given-names']?.value || '';
+      const family = response.data.name?.['family-name']?.value || '';
       user = new User({
-        nome: response.data.name.givenNames + ' ' + response.data.name.familyName,
+        nome: `${given} ${family}`.trim(),
         orcidId,
         tipo: 'pesquisador',
       });
