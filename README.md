@@ -136,3 +136,23 @@ Se não tiver o Node.js instalado, você pode baixá-lo em [https://nodejs.org/]
     ```
 
 *   Consulte a documentação do Create React App (ou Vite, dependendo de como o projeto foi criado) para obter informações adicionais sobre configuração e deployment: [https://create-react-app.dev/](https://create-react-app.dev/) (se Create React App) ou [https://vitejs.dev/](https://vitejs.dev/) (se Vite).
+
+
+## Configuração da API ORCID
+
+Para habilitar o login via ORCID no **frontend-RCEI**, é preciso registrar um cliente em [Developer Tools](https://orcid.org/developer-tools). A inscrição gratuita fornece um *Client ID* e permite definir as URLs de redirecionamento utilizadas durante a autenticação.
+
+Copie o arquivo de exemplo e crie um `.env` na pasta `frontend-RCEI`:
+
+```bash
+cp frontend-RCEI/.env.example frontend-RCEI/.env
+```
+
+Preencha o arquivo com:
+
+```bash
+VITE_ORCID_CLIENT_ID=<seu_client_id>
+VITE_ORCID_REDIRECT_URI=http://localhost:8080/callback
+```
+
+Essas variáveis são utilizadas pelo `frontend-RCEI` durante o desenvolvimento local.
