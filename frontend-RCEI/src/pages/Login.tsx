@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Obtenção dos valores de ambiente
 const { VITE_ORCID_CLIENT_ID, VITE_ORCID_REDIRECT_URI } = import.meta.env;
 
 export default function LoginPage() {
@@ -47,7 +48,7 @@ export default function LoginPage() {
       if (response.ok) {
         // Sucesso no login
         alert(`Login realizado com sucesso para: ${formData.email}`);
-        login(result.token);
+        login(result.token); // Armazenando o token no contexto de autenticação
 
         // Redirecionar para o dashboard
         navigate("/dashboard");
@@ -65,15 +66,17 @@ export default function LoginPage() {
   };
 
   const handleOrcidLogin = () => {
-    const url = `https://orcid.org/oauth/authorize?client_id=${encodeURIComponent(
-      VITE_ORCID_CLIENT_ID
-    )}&response_type=code&scope=${encodeURIComponent(
-      "/authenticate /read-public"
-    )}&redirect_uri=${encodeURIComponent(VITE_ORCID_REDIRECT_URI)}`;
+    // Criação da URL de autenticação para o ORCID
+    const params = new URLSearchParams({
+      client_id: VITE_ORCID_CLIENT_ID,
+      response_type: "code", // Usando 'code' ao invés de 'token', para garantir o fluxo OAuth adequado
+      scope: "/authenticate /read-public",
+      redirect_uri: VITE_ORCID_REDIRECT_URI,
+    });
 
-    window.location.href = url;
+    // Redirecionamento para a URL de autenticação ORCID
+    window.location.assign(`https://orcid.org/oauth/authorize?${params.toString()}`);
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
