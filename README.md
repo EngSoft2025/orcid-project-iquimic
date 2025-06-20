@@ -161,5 +161,8 @@ Essas variáveis são utilizadas pelo `frontend-RCEI` durante o desenvolvimento 
 
 Para realizar o login e consultar publicações, financiamentos e revisões de pares,
 solicite o escopo `/authenticate` juntamente com `/read-public`.
+
+Separe os escopos por espaço no parâmetro `scope`.
+
 Se precisar acessar informações restritas do perfil inclua também o escopo
 `/read-limited`.
