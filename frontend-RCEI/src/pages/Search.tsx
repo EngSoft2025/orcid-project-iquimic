@@ -40,6 +40,11 @@ const Search = () => {
     }));
   });
 
+  const filteredResults =
+    filter === "researchers" || filter === "all" ? results : [];
+  const filteredPublications =
+    filter === "publications" || filter === "all" ? publications : [];
+
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -108,13 +113,13 @@ const Search = () => {
         <Tabs defaultValue="researchers" className="w-full">
           <TabsList>
             <TabsTrigger value="researchers" className="flex items-center gap-1">
-              <User className="h-4 w-4" /> Pesquisadores
+              <User className="h-4 w-4" /> Pesquisadores ({filteredResults.length})
             </TabsTrigger>
             <TabsTrigger value="publications" className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" /> Publicações
+              <BookOpen className="h-4 w-4" /> Publicações ({filteredPublications.length})
             </TabsTrigger>
             <TabsTrigger value="projects" className="flex items-center gap-1">
-              <Book className="h-4 w-4" /> Projetos
+              <Book className="h-4 w-4" /> Projetos (0)
             </TabsTrigger>
           </TabsList>
           
@@ -142,7 +147,7 @@ const Search = () => {
             )}
 
             {!isLoading && !error &&
-              results.map((r: any) => (
+              filteredResults.map((r: any) => (
                 <Card key={r["orcid-id"]} className="hover:bg-muted/10 cursor-pointer transition-colors">
                   <CardContent className="flex items-center gap-4 p-5">
                     <Avatar className="h-12 w-12">
@@ -188,7 +193,7 @@ const Search = () => {
             )}
 
             {!isLoading && !error &&
-              publications.map((pub) => (
+              filteredPublications.map((pub) => (
                 <Card key={pub.id} className="hover:bg-muted/10 cursor-pointer transition-colors">
                   <CardContent className="p-5">
                     <h3 className="font-medium">{pub.title}</h3>
