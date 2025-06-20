@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +16,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Homepage from "./pages/Homepage";
 import AuthCallback from "./pages/AuthCallback";
+import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -26,21 +27,23 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Homepage />} /> 
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Index />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/publications" element={<Publications />} />
-          <Route path="/network" element={<Network />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
+            <Route path="/publications" element={<ProtectedRoute><Publications /></ProtectedRoute>} />
+            <Route path="/network" element={<ProtectedRoute><Network /></ProtectedRoute>} />
+            <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
+            <Route path="/reviews" element={<ProtectedRoute><Reviews /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

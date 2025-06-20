@@ -1,3 +1,5 @@
+import { getOrcidToken } from '@/services/auth';
+
 const BASE_URL = 'https://pub.orcid.org/v3.0';
 
 async function fetchOrcid(path: string) {
@@ -11,7 +13,18 @@ async function fetchOrcid(path: string) {
 }
 
 export async function searchResearchers(query: string) {
-  return fetchOrcid(`/expanded-search/?q=${encodeURIComponent(query)}`);
+  const token = getOrcidToken();
+  const headers: HeadersInit = { Accept: 'application/json' };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `https://pub.orcid.org/v3.0/expanded-search/?q=${encodeURIComponent(query)}`,
+    { headers }
+  );
+
+  return response.json();
 }
 
 export async function getWorks(orcid: string) {
