@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,16 +6,40 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
+  const [darkMode, setDarkMode] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/'); // Redireciona para a home após logout
   };
 
+  // Verificar o modo escuro na inicialização
+  useEffect(() => {
+    const darkModeStatus = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(darkModeStatus);
+    if (darkModeStatus) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkModeStatus = !darkMode;
+    setDarkMode(newDarkModeStatus);
+    localStorage.setItem('darkMode', String(newDarkModeStatus));
+
+    if (newDarkModeStatus) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  };
+
   return (
-    <nav className="bg-white shadow-md z-50 sticky top-0">
+    <nav className={`bg-white shadow-md z-50 sticky top-0 dark:bg-gray-800 dark:text-white`}>
       <div className="container mx-auto py-4 px-4 flex items-center justify-between">
-        <Link to="/" className="text-xl font-bold text-gray-800">
+        <Link to="/" className="text-xl font-bold text-gray-800 dark:text-white">
           RCEI - Repositório Científico e Educacional Integrado
         </Link>
 
@@ -29,10 +53,10 @@ export default function Navbar() {
             </Button>
           ) : (
             <>
-              <Link to="/contact" className="text-gray-700 hover:text-gray-900">
+              <Link to="/contact" className="text-gray-700 hover:text-gray-900 dark:text-white">
                 Contato
               </Link>
-              <Link to="/login" className="text-gray-700 hover:text-gray-900">
+              <Link to="/login" className="text-gray-700 hover:text-gray-900 dark:text-white">
                 Entrar
               </Link>
               <Link

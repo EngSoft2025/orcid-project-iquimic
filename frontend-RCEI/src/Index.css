@@ -90,6 +90,11 @@ body.dark {
   color: #ffffff;
 }
 
+/* Navbar no modo escuro */
+body.dark nav {
+  background-color: #333333;
+}
+
 /* Estilos para os componentes */
 body.dark .card {
   background-color: #333333;
