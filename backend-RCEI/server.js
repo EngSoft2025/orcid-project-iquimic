@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const orcidRoutes = require('./routes/orcidRoutes');
+
 
 // Carrega as variáveis de ambiente
 dotenv.config();
@@ -21,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 
 // Rotas
 app.use('/api/auth', authRoutes);
-
+app.use('/api', orcidRoutes);
 // Porta do servidor
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

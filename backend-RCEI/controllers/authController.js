@@ -80,49 +80,35 @@ const orcidLogin = async (req, res) => {
       },
       headers: { 'Accept': 'application/json' }
     });
+
     const { access_token, orcid } = tokenRes.data;
+    console.log('token', access_token)
 
-    const res2 = await axios.post(`${process.env.ORCID_BASE_URL}/oauth/token`,
-      new URLSearchParams({
-        grant_type: 'client_credentials',
-        client_id: process.env.ORCID_CLIENT_ID,
-        client_secret: process.env.ORCID_CLIENT_SECRET,
-        scope: '/read-public'
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
-    );
-
-    const access_token2 = res2.data.access_token;
     const response = await axios.get(`${process.env.ORCID_API_BASE_URL}/${orcid}/person`, {
       headers: {
-        Authorization: `Bearer ${access_token2}`,
+        Authorization: `Bearer ${access_token}`,
         Accept: 'application/vnd.orcid+json', // 👈 O header certo
       },
     });
 
     let user = await User.findOne({ orcidId: orcid });
-    console.log(user, 'user')
     if (!user) {
       const given = response.data.name?.['given-names']?.value || '';
       const family = response.data.name?.['family-name']?.value || '';
       const email = response.data.emails?.email?.[0]?.email || '';
-      console.log(given, 'given');
-      console.log(family, 'family');
-      console.log(email, 'email');
-      user = new User({
-        nome: `${given} ${family}`.trim(),
-        orcidId: orcid,
-        tipo: 'pesquisador',
-        email: email,
-      });
-      await user.save();
+      user = await User.findOne({ email: email })
+      if (!user) {
+        user = new User({
+          nome: `${given} ${family}`.trim(),
+          orcidId: orcid,
+          tipo: 'pesquisador',
+          email: email,
+        });
+        await user.save();
+      }
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, orcidToken: access_token, orcidId: orcid }, JWT_SECRET, { expiresIn: '1h' });
     return res.status(200).json({ message: 'Login ORCID bem-sucedido', token });
   } catch (error) {
     console.error(error);
