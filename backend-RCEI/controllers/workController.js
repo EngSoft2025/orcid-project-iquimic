@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const getOrcidFundings = async (req, res) => {
+const getOrcidWorks = async (req, res) => {
     const { orcidId } = req.query;
 
     if (!orcidId) {
@@ -27,9 +27,9 @@ const getOrcidFundings = async (req, res) => {
             return res.status(500).json({ error: 'Falha ao obter token ORCID' });
         }
 
-        // Faz a requisição para a API ORCID para obter fundings
+        // Faz a requisição para a API ORCID para obter works
         const response = await axios.get(
-            `${process.env.ORCID_API_BASE_URL || 'https://pub.orcid.org/v3.0'}/${orcidId}/fundings`,
+            `${process.env.ORCID_API_BASE_URL || 'https://pub.orcid.org/v3.0'}/${orcidId}/works`,
             {
                 headers: {
                     Accept: 'application/vnd.orcid+json',
@@ -40,14 +40,14 @@ const getOrcidFundings = async (req, res) => {
 
         return res.status(200).json(response.data);
     } catch (error) {
-        console.error('Erro ao buscar projetos ORCID:', error.message);
+        console.error('Erro ao buscar publicações ORCID:', error.message);
         return res.status(500).json({
-            error: 'Erro ao buscar projetos do ORCID',
+            error: 'Erro ao buscar publicações do ORCID',
             details: error.response?.data || error.message,
         });
     }
 };
 
 module.exports = {
-    getOrcidFundings,
+    getOrcidWorks,
 };

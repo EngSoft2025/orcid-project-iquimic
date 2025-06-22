@@ -162,47 +162,47 @@ const getUserData = async (req, res) => {
 
 // Função para atualizar os dados do usuário
 const updateUserData = async (req, res) => {
-    const { nome, email, institution, department, position, areas, notificationsEnabled, darkMode, publicProfile } = req.body;
+  const { nome, email, institution, department, position, areas, notificationsEnabled, darkMode, publicProfile } = req.body;
 
-    const token = req.header('Authorization')?.replace('Bearer ', ''); // Pegue o token diretamente da requisição
+  const token = req.header('Authorization')?.replace('Bearer ', ''); // Pegue o token diretamente da requisição
 
-    if (!token) {
-        return res.status(401).json({ error: 'Autenticação necessária' });
+  if (!token) {
+    return res.status(401).json({ error: 'Autenticação necessária' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET); // Verificando o token
+    const userId = decoded.userId; // Extraindo o userId do token
+
+    // Atualiza os dados do usuário no banco de dados
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        nome,
+        email,
+        institution,
+        department,
+        position,
+        areas,
+        notificationsEnabled,
+        darkMode,
+        publicProfile,
+      },
+      { new: true }  // Retorna o usuário atualizado
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET); // Verificando o token
-        const userId = decoded.userId; // Extraindo o userId do token
-
-        // Atualiza os dados do usuário no banco de dados
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            {
-                nome,
-                email,
-                institution,
-                department,
-                position,
-                areas,
-                notificationsEnabled,
-                darkMode,
-                publicProfile,
-            },
-            { new: true }  // Retorna o usuário atualizado
-        );
-
-        if (!updatedUser) {
-            return res.status(404).json({ error: 'Usuário não encontrado' });
-        }
-
-        return res.status(200).json({
-            message: 'Configurações atualizadas com sucesso!',
-            user: updatedUser,  // Retorna os dados atualizados do usuário
-        });
-    } catch (error) {
-        console.error('Erro ao atualizar dados do usuário:', error);
-        return res.status(500).json({ error: 'Erro ao atualizar dados do usuário' });
-    }
+    return res.status(200).json({
+      message: 'Configurações atualizadas com sucesso!',
+      user: updatedUser,  // Retorna os dados atualizados do usuário
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar dados do usuário:', error);
+    return res.status(500).json({ error: 'Erro ao atualizar dados do usuário' });
+  }
 };
 
 module.exports = {
