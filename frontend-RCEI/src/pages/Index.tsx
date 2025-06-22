@@ -6,9 +6,14 @@ import { CollaborationNetwork } from "@/components/CollaborationNetwork";
 import { ProjectsTable } from "@/components/ProjectsTable";
 import { CitationsChart } from "@/components/CitationsChart";
 import { RecentNotifications } from "@/components/RecentNotifications";
+import { Helmet } from "react-helmet";
 
 const Index = () => {
   return (
+    <>
+    <Helmet>
+      <title>Dashboard | RCEI</title>
+    </Helmet>
     <RceiLayout>
       <div className="space-y-6">
         <div>
@@ -43,6 +48,7 @@ const Index = () => {
         </div>
       </div>
     </RceiLayout>
+    </>
   );
 };
 

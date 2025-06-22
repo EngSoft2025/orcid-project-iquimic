@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search as SearchIcon, BookOpen, User, Book } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Helmet } from "react-helmet";
 
 interface TagConfig {
   label: string;
@@ -112,6 +113,10 @@ export default function Search() {
   const filteredProjects = (filter === "projects" || filter === "all") ? projects : [];
 
   return (
+    <>
+    <Helmet>
+      <title>Busca | RCEI</title>
+    </Helmet>
     <RceiLayout>
       <div className="space-y-6">
         <div>
@@ -277,5 +282,6 @@ export default function Search() {
         </Tabs>
       </div>
     </RceiLayout>
+    </>
   );
 }

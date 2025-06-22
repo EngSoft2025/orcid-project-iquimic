@@ -5,6 +5,7 @@ import { StatsSummary } from "@/components/StatsSummary";
 import { CitationsChart } from "@/components/CitationsChart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Helmet } from "react-helmet";
 
 const publicationsByType = [
   { name: "Artigos", value: 78 },
@@ -37,6 +38,10 @@ const COLORS = ["#39934c", "#3a78b9", "#8e9196", "#ef7e32"];
 
 const Statistics = () => {
   return (
+    <>
+    <Helmet>
+      <title>Estatísticas | RCEI</title>
+    </Helmet>
     <RceiLayout>
       <div className="space-y-6">
         <div>
@@ -279,6 +284,7 @@ const Statistics = () => {
         </Tabs>
       </div>
     </RceiLayout>
+    </>
   );
 };
 
