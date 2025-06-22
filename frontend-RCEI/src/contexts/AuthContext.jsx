@@ -6,24 +6,27 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
 
+  // Carregar o token armazenado no localStorage quando o componente for montado
   useEffect(() => {
-    const stored = getOrcidToken();
+    const stored = getOrcidToken(); // Tenta recuperar o token do localStorage
     if (stored) {
-      setToken(stored);
+      setToken(stored); // Se o token existir, define o estado com o token
     }
   }, []);
 
-  // Calcule a autenticação com base na presença do token
+  // Verifica se o usuário está autenticado com base na presença do token
   const isAuthenticated = token !== null;
 
+  // Função de login, que armazena o token e atualiza o estado
   const login = (newToken) => {
-    setOrcidToken(newToken);
-    setToken(newToken);
+    setOrcidToken(newToken); // Armazena o token no localStorage
+    setToken(newToken); // Atualiza o estado com o novo token
   };
 
+  // Função de logout, que remove o token e limpa o estado
   const logout = () => {
-    clearOrcidToken();
-    setToken(null);
+    clearOrcidToken(); // Remove o token do localStorage
+    setToken(null); // Limpa o estado
   };
 
   return (
@@ -33,6 +36,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// Hook personalizado para acessar o contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

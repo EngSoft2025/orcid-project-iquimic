@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogIn } from "lucide-react";
@@ -10,11 +10,18 @@ const { VITE_ORCID_CLIENT_ID, VITE_ORCID_REDIRECT_URI } = import.meta.env;
 
 export default function LoginPage() {
   const navigate = useNavigate();  // Hook para navegação
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();  // Obtemos o estado de autenticação
   const [formData, setFormData] = useState({
     email: "",
     senha: "",
   });
+
+  // Se já estiver logado, redireciona para o dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -47,6 +54,7 @@ export default function LoginPage() {
       if (response.ok) {
         // Sucesso no login
         alert(`Login realizado com sucesso para: ${formData.email}`);
+        localStorage.setItem('authToken', result.token); // Salva o token no localStorage
         login(result.token);
 
         // Redirecionar para o dashboard
@@ -64,11 +72,10 @@ export default function LoginPage() {
     setFormData({ email: "", senha: "" });
   };
 
-    const handleOrcidLogin = () => {
+  const handleOrcidLogin = () => {
     const url = `https://orcid.org/oauth/authorize?client_id=${VITE_ORCID_CLIENT_ID}&response_type=token&scope=/read-public&redirect_uri=${encodeURIComponent(VITE_ORCID_REDIRECT_URI)}`;
     window.location.href = url;
-    };
-
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

@@ -9,7 +9,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/'); // opcional: redireciona para a home após logout
+    navigate('/'); // Redireciona para a home após logout
   };
 
   return (
@@ -21,7 +21,6 @@ export default function Navbar() {
 
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
-            // Se está logado, só mostra o botão Sair
             <Button
               onClick={handleLogout}
               className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors"
@@ -29,18 +28,11 @@ export default function Navbar() {
               Sair
             </Button>
           ) : (
-            // Se não está logado, mostra Contato, Entrar e Cadastre-se
             <>
-              <Link
-                to="/contact"
-                className="text-gray-700 hover:text-gray-900"
-              >
+              <Link to="/contact" className="text-gray-700 hover:text-gray-900">
                 Contato
               </Link>
-              <Link
-                to="/login"
-                className="text-gray-700 hover:text-gray-900"
-              >
+              <Link to="/login" className="text-gray-700 hover:text-gray-900">
                 Entrar
               </Link>
               <Link

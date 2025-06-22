@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 import { MessageCircle, Zap, Users, Award, Search, Clipboard, User, BarChart2, Info } from 'lucide-react';
 
 const FeatureCard = ({ icon, title, description }: {
@@ -65,7 +64,6 @@ const Homepage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50">
-            <Navbar />
             <main className="flex-grow">
                 {/* Hero Section */}
                 <section className="bg-gradient-to-r from-green-500 to-teal-500 text-white py-16">
