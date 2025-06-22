@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { FolderKanban } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getSelfFundings } from "@/services/orcid"; // <-- função certa agora
+import { getFundings } from "@/services/orcid"; // <-- função certa agora
 
 interface Project {
   id: string;
@@ -59,7 +59,7 @@ const projects: Project[] = [
 export function ProjectsTable() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["self-fundings"],
-    queryFn: getSelfFundings,
+    queryFn: getFundings,
   });
 
   const projects: Project[] =
