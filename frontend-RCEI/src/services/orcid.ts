@@ -27,6 +27,21 @@ export async function searchResearchers(query: string) {
   return response.json();
 }
 
+export async function searchProjects(query: string) {
+  const token = getOrcidToken();
+  const headers: HeadersInit = { Accept: 'application/json' };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `https://pub.orcid.org/v3.0/expanded-search/?q=${encodeURIComponent(query)}&defType=dismax&search_field=funding`,
+    { headers },
+  );
+
+  return response.json();
+}
+
 export async function getWorks(orcid: string) {
   return fetchOrcid(`/${orcid}/works`);
 }

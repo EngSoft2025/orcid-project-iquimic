@@ -1,7 +1,7 @@
 
 import { FormEvent, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { searchResearchers } from "@/services/orcid";
+import { searchResearchers, searchProjects } from "@/services/orcid";
 import { RceiLayout } from "@/components/RceiLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,17 @@ const Search = () => {
     enabled: shouldFetch && !!searchQuery,
   });
 
+  const {
+    data: projectsData,
+    isLoading: isProjectsLoading,
+    error: projectsError,
+    refetch: refetchProjects,
+  } = useQuery({
+    queryKey: ["search-projects", searchQuery],
+    queryFn: () => searchProjects(searchQuery),
+    enabled: shouldFetch && filter === "projects" && !!searchQuery,
+  });
+
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) {
@@ -51,16 +62,30 @@ const Search = () => {
     }));
   });
 
+  const projectResults = (projectsData as any)?.["expanded-result"] ?? [];
+  const projects = projectResults.map((p: any, idx: number) => ({
+    id: p["orcid-id"] ? `${p["orcid-id"]}-${idx}` : String(idx),
+    title: Array.isArray(p["funding-title"]) ? p["funding-title"][0] : p["funding-title"],
+    start: Array.isArray(p["start-year"]) ? p["start-year"][0] : p["start-year"],
+    contributors: Array.isArray(p["contributor-credit-name"]) ? p["contributor-credit-name"] : [],
+  }));
+
   const filteredResults =
     filter === "researchers" || filter === "all" ? results : [];
   const filteredPublications =
     filter === "publications" || filter === "all" ? publications : [];
+  const filteredProjects =
+    filter === "projects" || filter === "all" ? projects : [];
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       setShouldFetch(true);
-      refetch();
+      if (filter === "projects") {
+        refetchProjects();
+      } else {
+        refetch();
+      }
     }
   };
 
@@ -131,7 +156,7 @@ const Search = () => {
               <BookOpen className="h-4 w-4" /> Publicações ({filteredPublications.length})
             </TabsTrigger>
             <TabsTrigger value="projects" className="flex items-center gap-1">
-              <Book className="h-4 w-4" /> Projetos (0)
+              <Book className="h-4 w-4" /> Projetos ({filteredProjects.length})
             </TabsTrigger>
           </TabsList>
           
@@ -217,16 +242,39 @@ const Search = () => {
               ))}
           </TabsContent>
           
-          <TabsContent value="projects" className="pt-4">
-            <DashboardCard>
-              <div className="text-center py-12">
-                <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                <h3 className="mt-4 text-lg font-medium">Nenhum projeto encontrado</h3>
-                <p className="text-muted-foreground mt-2">
-                  Tente ajustar seus critérios de busca
-                </p>
-              </div>
-            </DashboardCard>
+          <TabsContent value="projects" className="space-y-4 pt-4">
+            {isProjectsLoading && (
+              <>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="p-5">
+                    <CardContent className="space-y-2">
+                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-3 w-1/3" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+
+            {projectsError && (
+              <DashboardCard>
+                <div className="text-center py-8">Erro ao buscar projetos.</div>
+              </DashboardCard>
+            )}
+
+            {!isProjectsLoading && !projectsError &&
+              filteredProjects.map((proj) => (
+                <Card key={proj.id} className="hover:bg-muted/10 cursor-pointer transition-colors">
+                  <CardContent className="p-5">
+                    <h3 className="font-medium">{proj.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {proj.start ? `${proj.start}` : ''}
+                      {proj.contributors.length > 0 &&
+                        ` – ${proj.contributors.join(', ')}`}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
           </TabsContent>
         </Tabs>
       </div>
