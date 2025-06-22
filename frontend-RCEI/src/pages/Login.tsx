@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Obtenção dos valores de ambiente
 const { VITE_ORCID_CLIENT_ID, VITE_ORCID_REDIRECT_URI } = import.meta.env;
 
 export default function LoginPage() {
@@ -48,7 +47,7 @@ export default function LoginPage() {
       if (response.ok) {
         // Sucesso no login
         alert(`Login realizado com sucesso para: ${formData.email}`);
-        login(result.token); // Armazenando o token no contexto de autenticação
+        login(result.token);
 
         // Redirecionar para o dashboard
         navigate("/dashboard");
@@ -65,34 +64,26 @@ export default function LoginPage() {
     setFormData({ email: "", senha: "" });
   };
 
-  const handleOrcidLogin = () => {
-    // Criação da URL de autenticação para o ORCID
-    const params = new URLSearchParams({
-      client_id: VITE_ORCID_CLIENT_ID,
-      response_type: "code", // Usando 'code' ao invés de 'token', para garantir o fluxo OAuth adequado
-      scope: "/authenticate /read-public",
-      redirect_uri: VITE_ORCID_REDIRECT_URI,
-    });
+    const handleOrcidLogin = () => {
+    const url = `https://orcid.org/oauth/authorize?client_id=${VITE_ORCID_CLIENT_ID}&response_type=token&scope=/read-public&redirect_uri=${encodeURIComponent(VITE_ORCID_REDIRECT_URI)}`;
+    window.location.href = url;
+    };
 
-    // Redirecionamento para a URL de autenticação ORCID
-    window.location.assign(`https://orcid.org/oauth/authorize?${params.toString()}`);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-    {/* Navbar */}
-    <nav className="bg-white shadow-md">
+      {/* Navbar */}
+      <nav className="bg-white shadow-md">
         <div className="container mx-auto py-4 px-4">
-        <div className="flex items-center justify-between">
-            <Link to="/" className="text-xl font-bold text-gray-800">RCEI - Repositório Ciectífico e Educacional Integrado</Link>
+          <div className="flex items-center justify-between">
+            <Link to="/" className="text-xl font-bold text-gray-800">RCEI</Link>
             <div>
-            <Link to="/contact" className="mr-4 text-gray-700 hover:text-gray-900">Contato</Link>
-            <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">Entrar</Link>
-            <Link to="/register" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Cadastre-se</Link>
+              <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">Login</Link>
+              <Link to="/register" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Cadastre-se</Link>
             </div>
+          </div>
         </div>
-        </div>
-    </nav>
+      </nav>
 
       <main className="flex-grow flex items-center justify-center p-8">
         <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8">
