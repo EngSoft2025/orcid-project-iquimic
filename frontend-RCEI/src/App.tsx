@@ -17,6 +17,7 @@ import Register from "./pages/Register";
 import Homepage from "./pages/Homepage";
 import AuthCallback from "./pages/AuthCallback";
 import Contact from "./pages/Contact";
+import Navbar from '@/components/Navbar';
 import { AuthProvider } from "@/contexts/AuthContext";  // Verifique se o caminho está correto
 import ProtectedRoute from "@/components/ProtectedRoute";  // Verifique se o caminho está correto
 
@@ -29,6 +30,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/login" element={<Login />} />

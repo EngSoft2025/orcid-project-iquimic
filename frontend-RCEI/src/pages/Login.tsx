@@ -5,7 +5,6 @@ import { LogIn } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import Navbar from "@/components/Navbar";
 
 const { VITE_ORCID_CLIENT_ID, VITE_ORCID_REDIRECT_URI } = import.meta.env;
 
@@ -73,7 +72,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar />
       <main className="flex-grow flex items-center justify-center p-8">
         <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8">
           {/* Card ORCID */}
