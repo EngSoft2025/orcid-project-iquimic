@@ -1,16 +1,32 @@
-import { Link } from "react-router-dom";
-import { UserCircle } from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function Navbar() {
-    return (
-        <nav className="w-full bg-green-700 text-white shadow-md fixed top-0 left-0 z-50">
-            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <h1 className="text-xl font-bold">RCEI - Repositório Ciêntífico e Educacional Integrado</h1>
+const Navbar = () => {
+  return (
+    <nav className="bg-white shadow-md z-50 sticky top-0">
+      <div className="container mx-auto py-4 px-4">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="text-xl font-bold text-gray-800">
+            RCEI - Repositório Científico e Educacional Integrado
+          </Link>
+          <div>
+            <Link to="/contact" className="mr-4 text-gray-700 hover:text-gray-900">
+              Contato
+            </Link>
+            <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">
+              Entrar
+            </Link>
+            <Link
+              to="/register"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+            >
+              Cadastre-se
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
 
-                <Link to="/dashboard" className="hover:text-gray-200 transition-colors">
-                    <UserCircle className="w-7 h-7" />
-                </Link>
-            </div>
-        </nav>
-    );
-}
+export default Navbar;

@@ -9,6 +9,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      "/orcid": {
+        target: "https://pub.orcid.org",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/orcid/, "/v3.0"),
+      },
+    },
   },
   plugins: [
     react(),

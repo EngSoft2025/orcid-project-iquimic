@@ -1,45 +1,52 @@
-import { getOrcidToken } from '@/services/auth';
+const TOKEN_KEY = 'orcid_token';
+
+export async function getOrcidToken(): Promise<string | null> {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+  return null;
+}
 
 const BASE_URL = 'https://pub.orcid.org/v3.0';
 
 async function fetchOrcid(path: string) {
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(`${BASE_URL}${path}`, {
     headers: { Accept: 'application/json' },
   });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${path}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch ${path}: ${res.status} ${res.statusText}`);
   }
-  return response.json();
+  return res.json();
 }
 
 export async function searchResearchers(query: string) {
-  const token = getOrcidToken();
+  const token = await getOrcidToken();
   const headers: HeadersInit = { Accept: 'application/json' };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const response = await fetch(
-    `https://pub.orcid.org/v3.0/expanded-search/?q=${encodeURIComponent(query)}`,
+  const res = await fetch(
+    `${BASE_URL}/expanded-search/?q=${encodeURIComponent(query)}`,
     { headers }
   );
-
-  return response.json();
+  if (!res.ok) {
+    throw new Error(`Failed to search researchers: ${res.status} ${res.statusText}`);
+  }
+  return res.json();
 }
 
 export async function searchProjects(query: string) {
-  const token = getOrcidToken();
+  const token = await getOrcidToken();
   const headers: HeadersInit = { Accept: 'application/json' };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const response = await fetch(
-    `https://pub.orcid.org/v3.0/expanded-search/?q=${encodeURIComponent(query)}&defType=dismax&search_field=funding`,
-    { headers },
+  const res = await fetch(
+    `${BASE_URL}/expanded-search/?q=${encodeURIComponent(query)}&defType=dismax&search_field=funding`,
+    { headers }
   );
-
-  return response.json();
+  if (!res.ok) {
+    throw new Error(`Failed to search projects: ${res.status} ${res.statusText}`);
+  }
+  return res.json();
 }
 
 export async function getWorks(orcid: string) {
