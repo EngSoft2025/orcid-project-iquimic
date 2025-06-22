@@ -8,8 +8,9 @@ describe('Search filtering', () => {
   it('updates results when filter changes', () => {
     render(<Search />);
 
-    // Publications tab count should start at 0 because no data
+    // Publications and Projects tab counts should start at 0 because no data
     expect(screen.getByText(/Publicações \(0\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Projetos \(0\)/)).toBeInTheDocument();
 
     // Change filter to publications
     fireEvent.change(screen.getByRole('combobox'), {
