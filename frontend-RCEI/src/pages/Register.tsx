@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserPlus } from "lucide-react";
@@ -8,6 +8,17 @@ import { Switch } from "@/components/ui/switch";  // Certifique-se de importar o
 import { Label } from "@/components/ui/label";    // Certifique-se de importar o Label
 
 export default function RegisterPage() {
+
+    useEffect(() => {
+    // Ajustar o tema quando o componente for montado
+    const darkModeStatus = localStorage.getItem('darkMode') === 'true';
+    if (darkModeStatus) {
+        document.body.classList.add('dark');
+    } else {
+        document.body.classList.remove('dark');
+    }
+    }, []);
+
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // Estado para controlar o passo
     const [formData, setFormData] = useState({
@@ -104,7 +115,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-gray-900 dark:text-white">
             <main className="flex-grow flex items-center justify-center p-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

@@ -101,6 +101,16 @@ body.dark .card {
   color: #ffffff;
 }
 
+body.dark .card-title {
+  color: #ffffff; 
+}
+
+/* Adicionar modo escuro ao CardContent */
+body.dark .card-content {
+  background-color: #333333; 
+  color: #ffffff; 
+}
+
 body.dark .input, body.dark .button {
   background-color: #444;
   color: #fff;

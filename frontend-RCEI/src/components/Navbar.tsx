@@ -39,11 +39,17 @@ export default function Navbar() {
   return (
     <nav className={`bg-white shadow-md z-50 sticky top-0 dark:bg-gray-800 dark:text-white`}>
       <div className="container mx-auto py-4 px-4 flex items-center justify-between">
-        <Link to="/" className="text-xl font-bold text-gray-800 dark:text-white">
-          RCEI - Repositório Científico e Educacional Integrado
-        </Link>
+      <div className="text-xl font-bold text-gray-800 dark:text-white">
+        RCEI - Repositório Científico e Educacional Integrado
+      </div>
 
         <div className="flex items-center space-x-4">
+          <Button
+            onClick={toggleDarkMode}
+            className="bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white py-2 px-4 rounded-md"
+          >
+            {darkMode ? 'Modo Claro' : 'Modo Escuro'}
+          </Button>
           {isAuthenticated ? (
             <Button
               onClick={handleLogout}
@@ -53,6 +59,9 @@ export default function Navbar() {
             </Button>
           ) : (
             <>
+              <Link to="/" className="text-gray-700 hover:text-gray-900 dark:text-white">
+                Início
+              </Link>
               <Link to="/contact" className="text-gray-700 hover:text-gray-900 dark:text-white">
                 Contato
               </Link>

@@ -63,7 +63,7 @@ const Homepage = () => {
     ]);
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
+        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 dark:text-white">
             <main className="flex-grow">
                 {/* Hero Section */}
                 <section className="bg-gradient-to-r from-green-500 to-teal-500 text-white py-16">

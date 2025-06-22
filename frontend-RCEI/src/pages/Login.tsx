@@ -22,7 +22,16 @@ export default function LoginPage() {
     if (isAuthenticated) {
       navigate("/dashboard");
     }
+
+    // Ajustar o tema quando o componente for montado
+    const darkModeStatus = localStorage.getItem('darkMode') === 'true';
+    if (darkModeStatus) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
   }, [isAuthenticated, navigate]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -87,7 +96,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-gray-900 dark:text-white">
       <main className="flex-grow flex items-center justify-center p-8">
         <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8">
           {/* Card ORCID */}
