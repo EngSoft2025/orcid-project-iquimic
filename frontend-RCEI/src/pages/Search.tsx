@@ -73,7 +73,7 @@ const Search = () => {
             Encontre pesquisadores, publicações e projetos
           </p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg border shadow-sm">
           <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
@@ -102,7 +102,7 @@ const Search = () => {
               </Button>
             </div>
           </form>
-          
+
           <div className="flex flex-wrap gap-2 mt-4">
             <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
               Inteligência Artificial
@@ -121,7 +121,7 @@ const Search = () => {
             </Badge>
           </div>
         </div>
-        
+
         <Tabs defaultValue="researchers" className="w-full">
           <TabsList>
             <TabsTrigger value="researchers" className="flex items-center gap-1">
@@ -134,7 +134,7 @@ const Search = () => {
               <Book className="h-4 w-4" /> Projetos (0)
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="researchers" className="space-y-4 pt-4">
             {isLoading && (
               <>
@@ -183,7 +183,7 @@ const Search = () => {
                 </Card>
               ))}
           </TabsContent>
-          
+
           <TabsContent value="publications" className="space-y-4 pt-4">
             {isLoading && (
               <>
@@ -216,7 +216,7 @@ const Search = () => {
                 </Card>
               ))}
           </TabsContent>
-          
+
           <TabsContent value="projects" className="pt-4">
             <DashboardCard>
               <div className="text-center py-12">

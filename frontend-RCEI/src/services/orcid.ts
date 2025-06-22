@@ -13,16 +13,13 @@ async function fetchOrcid(path: string) {
 }
 
 export async function searchResearchers(query: string) {
-  const token = getOrcidToken();
-  const headers: HeadersInit = { Accept: 'application/json' };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
 
   const response = await fetch(
-    `https://pub.orcid.org/v3.0/expanded-search/?q=${encodeURIComponent(query)}`,
-    { headers }
-  );
+    `${import.meta.env.VITE_BACK_BASE_URL}/search?query=${encodeURIComponent(query)}`);
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar pesquisadores');
+  }
 
   return response.json();
 }
@@ -41,6 +38,18 @@ export async function getFunding(orcid: string) {
 
 export async function getPeerReviews(orcid: string) {
   return fetchOrcid(`/${orcid}/peer-reviews`);
+}
+
+
+export async function getSelfFundings() {
+
+  const response = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/self/fundings`);
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar projetos (fundings) do ORCID');
+  }
+
+  return response.json();
 }
 
 export const DEFAULT_ORCID = '0000-0003-3905-0546';

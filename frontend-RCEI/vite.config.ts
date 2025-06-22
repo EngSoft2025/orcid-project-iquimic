@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: parseInt(process.env.PORT || '3000'),
     allowedHosts: [
-      'a87d-189-7-87-150.ngrok-free.app' // substitua pelo domínio atual do seu ngrok
+      '38fb-2804-14d-8084-950d-00-1001.ngrok-free.app' // substitua pelo domínio atual do seu ngrok
     ],
   },
   plugins: [
