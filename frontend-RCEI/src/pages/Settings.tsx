@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RceiLayout } from "@/components/RceiLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +10,106 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Settings() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [publicProfile, setPublicProfile] = useState(true);
-  
+  const [userData, setUserData] = useState({
+    nome: "",
+    email: "",
+    institution: "",
+    department: "",
+    position: "",
+    areas: "",
+    orcid: "",
+    notificationsEnabled: true,
+    darkMode: false,
+    publicProfile: true,
+  });
+
+  // Buscar dados do usuário quando o componente for montado
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        console.log('Token JWT:', token);  // Verifique o token
+
+        const response = await fetch('http://localhost:8080/api/auth/user', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,  // Corrigindo a sintaxe da autorização
+          },
+        });
+
+        const textResponse = await response.text();  // Obtenha o corpo da resposta como texto
+        console.log('Conteúdo da resposta:', textResponse);  // Exibe a resposta como texto
+
+        if (response.ok) {
+          const data = JSON.parse(textResponse);  // Tenta parsear como JSON manualmente
+          setUserData({
+            nome: data.nome,
+            email: data.email,
+            institution: data.institution || "",
+            department: data.department || "",
+            position: data.position || "",
+            areas: data.researchAreas || "",
+            orcid: data.orcid || "",
+            notificationsEnabled: data.notificationsEnabled,
+            darkMode: data.darkMode,
+            publicProfile: data.publicProfile,
+          });
+        } else {
+          console.error('Erro ao buscar dados do usuário, status:', response.status);
+          console.error('Mensagem de erro:', textResponse);
+        }
+      } catch (error) {
+        console.error('Erro ao fazer requisição para buscar dados do usuário:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSwitchChange = (checked: boolean, name: string) => {
+    setUserData((prevData) => ({ ...prevData, [name]: checked }));
+
+    if (name === "darkMode") {
+      // Atualiza o modo escuro no localStorage e no body
+      localStorage.setItem('darkMode', String(checked));
+      if (checked) {
+        document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/user/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`, // Corrigido o token
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert('Configurações salvas com sucesso!');
+        console.log('Dados atualizados:', result);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Erro ao salvar configurações');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar configurações', error);
+      alert('Erro ao se conectar ao servidor. Tente novamente mais tarde.');
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -26,15 +121,14 @@ export default function Settings() {
           <p className="text-muted-foreground">
             Personalize as configurações da sua conta e da aplicação.
           </p>
-          
+
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 md:grid-cols-4">
+            <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 md:grid-cols-3">
               <TabsTrigger value="profile">Perfil</TabsTrigger>
-              <TabsTrigger value="account">Conta</TabsTrigger>
               <TabsTrigger value="appearance">Aparência</TabsTrigger>
               <TabsTrigger value="notifications">Notificações</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="profile" className="mt-6 space-y-6">
               <Card>
                 <CardHeader>
@@ -46,118 +140,90 @@ export default function Settings() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome Completo</Label>
-                    <Input id="name" defaultValue="Prof. Seiji Isotani" />
+                    <Input
+                      id="name"
+                      name="nome"
+                      value={userData.nome}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="institution">Instituição</Label>
-                    <Input id="institution" defaultValue="Universidade de São Paulo" />
+                    <Input
+                      id="institution"
+                      name="institution"
+                      value={userData.institution}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="department">Departamento</Label>
-                    <Input id="department" defaultValue="Instituto de Ciências Matemáticas e de Computação" />
+                    <Input
+                      id="department"
+                      name="department"
+                      value={userData.department}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="position">Cargo</Label>
-                    <Input id="position" defaultValue="Professor Titular" />
+                    <Input
+                      id="position"
+                      name="position"
+                      value={userData.position}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="areas">Áreas de Pesquisa</Label>
-                    <Input id="areas" defaultValue="Computação, Educação, Inteligência Artificial" />
+                    <Input
+                      id="areas"
+                      name="areas"
+                      value={userData.areas}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="public-profile" 
-                      checked={publicProfile} 
-                      onCheckedChange={setPublicProfile} 
+                    <Switch
+                      id="public-profile"
+                      checked={userData.publicProfile}
+                      onCheckedChange={(checked) => handleSwitchChange(checked, "publicProfile")}
                     />
                     <Label htmlFor="public-profile">Perfil público</Label>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">Salvar alterações</Button>
+                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600" onClick={handleSave}>
+                    Salvar alterações
+                  </Button>
                 </CardFooter>
               </Card>
             </TabsContent>
-            
-            <TabsContent value="account" className="mt-6 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Conta</CardTitle>
-                  <CardDescription>
-                    Atualize as configurações da sua conta.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-mail</Label>
-                    <Input id="email" type="email" defaultValue="seiji.isotani@usp.br" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="orcid">ORCID ID</Label>
-                    <Input id="orcid" defaultValue="0000-0003-3905-0546" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Senha</Label>
-                    <Input id="password" type="password" value="********" />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button variant="outline">Alterar senha</Button>
-                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">Salvar alterações</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-            
+
             <TabsContent value="appearance" className="mt-6 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Aparência</CardTitle>
-                  <CardDescription>
-                    Personalize a aparência da aplicação.
-                  </CardDescription>
+                  <CardDescription>Personalize a aparência da aplicação.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="dark-mode" 
-                      checked={isDarkMode} 
-                      onCheckedChange={setIsDarkMode} 
+                    <Switch
+                      id="dark-mode"
+                      checked={userData.darkMode}
+                      onCheckedChange={(checked) => handleSwitchChange(checked, "darkMode")}
                     />
                     <Label htmlFor="dark-mode">Modo escuro</Label>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="theme">Tema</Label>
-                    <Select defaultValue="green">
-                      <SelectTrigger id="theme">
-                        <SelectValue placeholder="Selecione um tema" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="green">Verde (Padrão)</SelectItem>
-                        <SelectItem value="blue">Azul</SelectItem>
-                        <SelectItem value="purple">Roxo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="font-size">Tamanho da fonte</Label>
-                    <Select defaultValue="normal">
-                      <SelectTrigger id="font-size">
-                        <SelectValue placeholder="Selecione um tamanho" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="small">Pequena</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="large">Grande</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">Salvar alterações</Button>
+                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600" onClick={handleSave}>
+                    Salvar alterações
+                  </Button>
                 </CardFooter>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="notifications" className="mt-6 space-y-6">
               <Card>
                 <CardHeader>
@@ -168,48 +234,18 @@ export default function Settings() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="enable-notifications" 
-                      checked={notificationsEnabled} 
-                      onCheckedChange={setNotificationsEnabled} 
+                    <Switch
+                      id="enable-notifications"
+                      checked={userData.notificationsEnabled}
+                      onCheckedChange={(checked) => handleSwitchChange(checked, "notificationsEnabled")}
                     />
                     <Label htmlFor="enable-notifications">Habilitar notificações</Label>
                   </div>
-                  <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-medium mb-2">Notificar sobre:</h3>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="new-citations" defaultChecked />
-                      <Label htmlFor="new-citations">Novas citações</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="collaborator-publications" defaultChecked />
-                      <Label htmlFor="collaborator-publications">Publicações de colaboradores</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="project-updates" defaultChecked />
-                      <Label htmlFor="project-updates">Atualizações de projetos</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="new-reviews" defaultChecked />
-                      <Label htmlFor="new-reviews">Novas avaliações</Label>
-                    </div>
-                  </div>
-                  <div className="space-y-2 pt-2">
-                    <Label htmlFor="email-frequency">Frequência de e-mails</Label>
-                    <Select defaultValue="daily">
-                      <SelectTrigger id="email-frequency">
-                        <SelectValue placeholder="Selecione uma frequência" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="immediately">Imediatamente</SelectItem>
-                        <SelectItem value="daily">Diário</SelectItem>
-                        <SelectItem value="weekly">Semanal</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">Salvar alterações</Button>
+                  <Button className="bg-rcei-green-500 hover:bg-rcei-green-600" onClick={handleSave}>
+                    Salvar alterações
+                  </Button>
                 </CardFooter>
               </Card>
             </TabsContent>

@@ -6,6 +6,13 @@ const userSchema = new mongoose.Schema({
   senha: { type: String },
   tipo: { type: String, enum: ['aluno', 'pesquisador'], required: true },
   orcidId: { type: String, unique: true },
+  institution: { type: String },
+  department: { type: String },  
+  position: { type: String },   
+  areas: { type: String },     
+  notificationsEnabled: { type: Boolean, default: true },
+  darkMode: { type: Boolean, default: false }, 
+  publicProfile: { type: Boolean, default: true }, 
 }, {
   timestamps: true,
 });

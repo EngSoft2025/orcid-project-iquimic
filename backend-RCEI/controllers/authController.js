@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Função para registro de usuário
 const registerUser = async (req, res) => {
-  const { nome, email, senha, confirmarSenha, tipo } = req.body;
+  const { nome, email, senha, confirmarSenha, tipo, institution, department, position, areas, notificationsEnabled, darkMode, publicProfile } = req.body;
 
   if (senha !== confirmarSenha) {
     return res.status(400).json({ error: 'As senhas não conferem' });
@@ -27,6 +27,13 @@ const registerUser = async (req, res) => {
       email,
       senha: hashedPassword,
       tipo,
+      institution,
+      department,
+      position,
+      areas,
+      notificationsEnabled,
+      darkMode,
+      publicProfile,
     });
 
     await newUser.save();
@@ -116,8 +123,92 @@ const orcidLogin = async (req, res) => {
   }
 };
 
+// Função para obter dados do usuário autenticado
+const getUserData = async (req, res) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', ''); // Pegue o token diretamente da requisição
+    if (!token) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
+    // Verifique o token JWT
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;  // Obtenha o ID do usuário do token
+
+    // Busque o usuário no banco de dados
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    // Retorne os dados do usuário
+    return res.status(200).json({
+      nome: user.nome,
+      email: user.email,
+      institution: user.institution,
+      department: user.department,
+      position: user.position,
+      researchAreas: user.researchAreas,
+      orcid: user.orcid,
+      notificationsEnabled: user.notificationsEnabled,
+      darkMode: user.darkMode,
+      publicProfile: user.publicProfile,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar dados do usuário:', error);
+    return res.status(500).json({ error: 'Erro ao buscar dados do usuário' });
+  }
+};
+
+// Função para atualizar os dados do usuário
+const updateUserData = async (req, res) => {
+    const { nome, email, institution, department, position, areas, notificationsEnabled, darkMode, publicProfile } = req.body;
+
+    const token = req.header('Authorization')?.replace('Bearer ', ''); // Pegue o token diretamente da requisição
+
+    if (!token) {
+        return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET); // Verificando o token
+        const userId = decoded.userId; // Extraindo o userId do token
+
+        // Atualiza os dados do usuário no banco de dados
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                nome,
+                email,
+                institution,
+                department,
+                position,
+                areas,
+                notificationsEnabled,
+                darkMode,
+                publicProfile,
+            },
+            { new: true }  // Retorna o usuário atualizado
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        return res.status(200).json({
+            message: 'Configurações atualizadas com sucesso!',
+            user: updatedUser,  // Retorna os dados atualizados do usuário
+        });
+    } catch (error) {
+        console.error('Erro ao atualizar dados do usuário:', error);
+        return res.status(500).json({ error: 'Erro ao atualizar dados do usuário' });
+    }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   orcidLogin,
+  getUserData,
+  updateUserData,
 };

@@ -84,6 +84,27 @@
   }
 }
 
+/* Estilos para o modo escuro */
+body.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+/* Estilos para os componentes */
+body.dark .card {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+body.dark .input, body.dark .button {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark .switch {
+  background-color: #666;
+}
+
 @layer base {
   * {
     @apply border-border;

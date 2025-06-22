@@ -4,25 +4,47 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
+import { Switch } from "@/components/ui/switch";  // Certifique-se de importar o Switch
+import { Label } from "@/components/ui/label";    // Certifique-se de importar o Label
 
 export default function RegisterPage() {
     const navigate = useNavigate();
+    const [step, setStep] = useState(1); // Estado para controlar o passo
     const [formData, setFormData] = useState({
         nome: "",
         email: "",
         senha: "",
         confirmarSenha: "",
+        institution: "",
+        department: "",
+        position: "",
+        areas: "",
+        notificationsEnabled: true,
+        darkMode: false,
+        publicProfile: true,
     });
-    const [senhaDiferente, setSenhaDiferente] = useState(false)
+    const [senhaDiferente, setSenhaDiferente] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
         if (e.target.name === "confirmarSenha") {
-            setSenhaDiferente(e.target.value !== formData.senha)
+            setSenhaDiferente(e.target.value !== formData.senha);
         }
         if (e.target.name === "senha") {
-            setSenhaDiferente(e.target.value !== formData.confirmarSenha)
+            setSenhaDiferente(e.target.value !== formData.confirmarSenha);
         }
+    };
+
+    const handleSwitchChange = (checked: boolean, name: string) => {
+        setFormData((prev) => ({ ...prev, [name]: checked }));
+    };
+
+    const handleNextStep = () => {
+        setStep(step + 1);
+    };
+
+    const handlePrevStep = () => {
+        setStep(step - 1);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -44,7 +66,13 @@ export default function RegisterPage() {
                     senha: formData.senha,
                     confirmarSenha: formData.confirmarSenha,
                     tipo: 'aluno', // Alterar conforme necessário
-                    // Não enviar orcidId
+                    institution: formData.institution,
+                    department: formData.department,
+                    position: formData.position,
+                    areas: formData.areas,
+                    notificationsEnabled: formData.notificationsEnabled,
+                    darkMode: formData.darkMode,
+                    publicProfile: formData.publicProfile,
                 }),
             });
 
@@ -60,7 +88,19 @@ export default function RegisterPage() {
             alert('Erro ao se conectar com o servidor');
         }
 
-        setFormData({ nome: "", email: "", senha: "", confirmarSenha: "" });
+        setFormData({
+            nome: "",
+            email: "",
+            senha: "",
+            confirmarSenha: "",
+            institution: "",
+            department: "",
+            position: "",
+            areas: "",
+            notificationsEnabled: true,
+            darkMode: false,
+            publicProfile: true,
+        });
     };
 
     return (
@@ -81,55 +121,143 @@ export default function RegisterPage() {
                         </CardHeader>
                         <CardContent className="p-6">
                             <form onSubmit={handleSubmit} className="space-y-4">
-                                <input
-                                    type="text"
-                                    name="nome"
-                                    placeholder="Nome completo"
-                                    value={formData.nome}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="E-mail"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                />
-                                <input
-                                    type="password"
-                                    name="senha"
-                                    placeholder="Senha"
-                                    value={formData.senha}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                />
-                                <input
-                                    type="password"
-                                    name="confirmarSenha"
-                                    placeholder="Confirmar senha"
-                                    value={formData.confirmarSenha}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                />
-                                {senhaDiferente && (
-                                    <p className="text-red-500 text-sm">As senhas não coincidem.</p>
+                                {/* Passo 1: Informações básicas */}
+                                {step === 1 && (
+                                    <>
+                                        <input
+                                            type="text"
+                                            name="nome"
+                                            placeholder="Nome completo"
+                                            value={formData.nome}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            placeholder="E-mail"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="password"
+                                            name="senha"
+                                            placeholder="Senha"
+                                            value={formData.senha}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="password"
+                                            name="confirmarSenha"
+                                            placeholder="Confirmar senha"
+                                            value={formData.confirmarSenha}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        {senhaDiferente && (
+                                            <p className="text-red-500 text-sm">As senhas não coincidem.</p>
+                                        )}
+
+                                        <Button
+                                            type="button"
+                                            onClick={handleNextStep}
+                                            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl flex justify-center items-center"
+                                        >
+                                            Próximo
+                                        </Button>
+                                    </>
                                 )}
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl flex justify-center items-center"
-                                >
-                                    <UserPlus className="w-4 h-4 mr-2" />
-                                    Cadastrar
-                                </Button>
-                                <div className="text-center text-sm text-gray-600">
-                                    Já tem uma conta? <Link to="/login" className="text-green-500 hover:underline">Entrar</Link>
-                                </div>
+
+                                {/* Passo 2: Informações adicionais */}
+                                {step === 2 && (
+                                    <>
+                                        <input
+                                            type="text"
+                                            name="institution"
+                                            placeholder="Instituição"
+                                            value={formData.institution}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="department"
+                                            placeholder="Departamento"
+                                            value={formData.department}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="position"
+                                            placeholder="Cargo"
+                                            value={formData.position}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="areas"
+                                            placeholder="Áreas de Pesquisa"
+                                            value={formData.areas}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+
+                                        <div className="flex items-center space-x-2">
+                                            <Switch
+                                                id="notificationsEnabled"
+                                                checked={formData.notificationsEnabled}
+                                                onCheckedChange={(checked) => handleSwitchChange(checked, "notificationsEnabled")}
+                                            />
+                                            <Label htmlFor="notificationsEnabled">Habilitar notificações</Label>
+                                        </div>
+
+                                        <div className="flex items-center space-x-2">
+                                            <Switch
+                                                id="darkMode"
+                                                checked={formData.darkMode}
+                                                onCheckedChange={(checked) => handleSwitchChange(checked, "darkMode")}
+                                            />
+                                            <Label htmlFor="darkMode">Modo escuro</Label>
+                                        </div>
+
+                                        <div className="flex items-center space-x-2">
+                                            <Switch
+                                                id="publicProfile"
+                                                checked={formData.publicProfile}
+                                                onCheckedChange={(checked) => handleSwitchChange(checked, "publicProfile")}
+                                            />
+                                            <Label htmlFor="publicProfile">Perfil público</Label>
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            onClick={handlePrevStep}
+                                            className="w-full bg-gray-300 hover:bg-gray-400 text-white font-medium py-2 rounded-xl flex justify-center items-center"
+                                        >
+                                            Voltar
+                                        </Button>
+
+                                        <Button
+                                            type="submit"
+                                            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl flex justify-center items-center"
+                                        >
+                                            <UserPlus className="w-4 h-4 mr-2" />
+                                            Cadastrar
+                                        </Button>
+                                    </>
+                                )}
                             </form>
                         </CardContent>
                     </Card>

@@ -24,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 // Rotas
 app.use('/api/auth', authRoutes);
 app.use('/api', orcidRoutes);
+
 // Porta do servidor
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

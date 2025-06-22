@@ -25,6 +25,11 @@ type SidebarItem = {
 };
 
 const sidebarItems: SidebarItem[] = [
+    {
+    icon: Search,
+    label: "Busca",
+    href: "/search",
+  },
   {
     icon: Home,
     label: "Dashboard",
@@ -49,11 +54,6 @@ const sidebarItems: SidebarItem[] = [
     icon: FolderKanban,
     label: "Projetos",
     href: "/projects",
-  },
-  {
-    icon: Search,
-    label: "Busca",
-    href: "/search",
   },
   {
     icon: MessageSquare,
