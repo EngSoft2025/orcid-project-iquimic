@@ -17,10 +17,10 @@ export default function RegisterPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-        if (e.target.name === "confirmarSenha"){
+        if (e.target.name === "confirmarSenha") {
             setSenhaDiferente(e.target.value !== formData.senha)
         }
-        if (e.target.name === "senha"){
+        if (e.target.name === "senha") {
             setSenhaDiferente(e.target.value !== formData.confirmarSenha)
         }
     };
@@ -33,8 +33,7 @@ export default function RegisterPage() {
         }
 
         try {
-            // Não inclui o campo orcidId se não for necessário
-            const response = await fetch('http://localhost:5000/api/auth/register', {
+            const response = await fetch(import.meta.env.VITE_BACK_BASE_URL + '/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

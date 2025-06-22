@@ -26,19 +26,19 @@ interface TagConfig {
 
 const TAGS: TagConfig[] = [
   { label: "Inteligência Artificial", query: 'keyword:"Inteligência Artificial"' },
-  { label: "Educação",                query: 'keyword:"Educação"' },
-  { label: "Data Mining",             query: 'keyword:"Data Mining"' },
+  { label: "Educação", query: 'keyword:"Educação"' },
+  { label: "Data Mining", query: 'keyword:"Data Mining"' },
   { label: "Universidade de São Paulo", query: 'affiliation-org-name:"Universidade de São Paulo"' },
-  { label: "Machine Learning",        query: 'keyword:"Machine Learning"' },
+  { label: "Machine Learning", query: 'keyword:"Machine Learning"' },
 ];
 
 type Filter = "all" | "researchers" | "publications" | "projects";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter]       = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("all");
   const [shouldFetch, setShouldFetch] = useState(false);
-  const [activeTags, setActiveTags]   = useState<string[]>([]);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
 
   // Monta a query combinando texto e tags
   const finalQuery = useMemo(() => {
@@ -84,8 +84,8 @@ export default function Search() {
   }
 
   // Dados extraídos
-  const results              = resQ.data?.["expanded-result"] ?? [];
-  const filteredResults      = (filter === "researchers" || filter === "all") ? results : [];
+  const results = resQ.data?.["expanded-result"] ?? [];
+  const filteredResults = (filter === "researchers" || filter === "all") ? results : [];
 
   const publications = results.flatMap((r: any, i: number) =>
     (Array.isArray(r["work-title"]) ? r["work-title"] : []).map((t: string, j: number) => ({
@@ -96,7 +96,7 @@ export default function Search() {
   );
   const filteredPublications = (filter === "publications" || filter === "all") ? publications : [];
 
-  const projResults         = projQ.data?.["expanded-result"] ?? [];
+  const projResults = projQ.data?.["expanded-result"] ?? [];
   const projects = projResults.map((p: any, i: number) => ({
     id: `${p["orcid-id"] ?? "proj"}-${i}`,
     title: Array.isArray(p["funding-title"])
@@ -114,13 +114,15 @@ export default function Search() {
   return (
     <RceiLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Busca</h1>
-        <p className="text-muted-foreground">
-          Encontre pesquisadores, publicações e projetos
-        </p>
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Busca</h1>
+          <p className="text-muted-foreground">
+            Encontre pesquisadores, publicações e projetos
+          </p>
+        </div>
 
-        <form onSubmit={handleSearch} className="bg-white p-6 rounded-lg border shadow-sm">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white p-6 rounded-lg border shadow-sm">
+          <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <SearchIcon className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
               <Input
@@ -146,7 +148,7 @@ export default function Search() {
                 Buscar
               </Button>
             </div>
-          </div>
+          </form>
 
           <div className="flex flex-wrap gap-2 mt-4">
             {TAGS.map(tag => (
@@ -167,7 +169,7 @@ export default function Search() {
               </Badge>
             ))}
           </div>
-        </form>
+        </div>
 
         <Tabs defaultValue="researchers" className="w-full">
           <TabsList>
@@ -258,8 +260,19 @@ export default function Search() {
                     </p>
                   </CardContent>
                 </Card>
-              ))
-            }
+              ))}
+          </TabsContent>
+
+          <TabsContent value="projects" className="pt-4">
+            <DashboardCard>
+              <div className="text-center py-12">
+                <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                <h3 className="mt-4 text-lg font-medium">Nenhum projeto encontrado</h3>
+                <p className="text-muted-foreground mt-2">
+                  Tente ajustar seus critérios de busca
+                </p>
+              </div>
+            </DashboardCard>
           </TabsContent>
         </Tabs>
       </div>

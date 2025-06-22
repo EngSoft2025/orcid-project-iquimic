@@ -1,7 +1,5 @@
 
 import { DashboardCard } from "@/components/ui/dashboard-card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -11,6 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FolderKanban } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getSelfFundings } from "@/services/orcid"; // <-- função certa agora
 
 interface Project {
   id: string;
@@ -57,22 +57,28 @@ const projects: Project[] = [
 ];
 
 export function ProjectsTable() {
-  const getStatusBadge = (status: Project["status"]) => {
-    switch (status) {
-      case "em_andamento":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Em andamento</Badge>;
-      case "concluido":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Concluído</Badge>;
-      case "planejado":
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Planejado</Badge>;
-      default:
-        return null;
-    }
-  };
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["self-fundings"],
+    queryFn: getSelfFundings,
+  });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("pt-BR").format(date);
+  const projects: Project[] =
+    data?.funding?.group?.map((g: any) => {
+      const summary = g["funding-summary"]?.[0];
+      return {
+        id: String(summary["put-code"]),
+        name: summary?.title?.title?.value ?? "",
+        start: summary?.startDate?.year?.value,
+        members:
+          summary?.contributors?.contributor?.length ??
+          summary?.contributors?.length ??
+          0,
+      };
+    }) ?? [];
+
+  const formatDate = (year?: string) => {
+    if (!year) return "";
+    return year;
   };
 
   return (
@@ -89,20 +95,27 @@ export function ProjectsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {projects.map((project) => (
-              <TableRow key={project.id}>
-                <TableCell className="font-medium">{project.name}</TableCell>
-                <TableCell>{getStatusBadge(project.status)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Progress value={project.progress} className="h-2 w-[100px]" />
-                    <span className="text-xs text-muted-foreground">{project.progress}%</span>
-                  </div>
-                </TableCell>
-                <TableCell>{formatDate(project.deadline)}</TableCell>
-                <TableCell>{project.members}</TableCell>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={3}>Carregando projetos...</TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={3}>Erro ao carregar projetos.</TableCell>
+              </TableRow>
+            ) : projects.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3}>Nenhum projeto encontrado.</TableCell>
+              </TableRow>
+            ) : (
+              projects.map((project) => (
+                <TableRow key={project.id}>
+                  <TableCell className="font-medium">{project.name}</TableCell>
+                  <TableCell>{formatDate(project.start)}</TableCell>
+                  <TableCell>{project.members}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

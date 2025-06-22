@@ -3,12 +3,14 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import tsconfigPaths from 'vite-tsconfig-paths';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
     proxy: {
       "/orcid": {
         target: "https://pub.orcid.org",
@@ -17,6 +19,10 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/orcid/, "/v3.0"),
       },
     },
+    port: parseInt(process.env.PORT || '3000'),
+    allowedHosts: [
+      '38fb-2804-14d-8084-950d-00-1001.ngrok-free.app' // substitua pelo domínio atual do seu ngrok
+    ],
   },
   plugins: [
     react(),
