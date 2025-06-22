@@ -33,6 +33,7 @@ export default function RegisterPage() {
         }
 
         try {
+            // Não inclui o campo orcidId se não for necessário
             const response = await fetch('http://localhost:5000/api/auth/register', {
                 method: 'POST',
                 headers: {
@@ -43,7 +44,8 @@ export default function RegisterPage() {
                     email: formData.email,
                     senha: formData.senha,
                     confirmarSenha: formData.confirmarSenha,
-                    tipo: 'aluno',  // você pode alterar para o tipo desejado
+                    tipo: 'aluno', // Alterar conforme necessário
+                    // Não enviar orcidId
                 }),
             });
 

@@ -1,104 +1,81 @@
+
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 
-require('dotenv').config();
-
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Função para registro de usuário
 const registerUser = async (req, res) => {
-    const { nome, email, senha, confirmarSenha, tipo } = req.body;
+  const { nome, email, senha, confirmarSenha, tipo } = req.body;
 
-    if (senha !== confirmarSenha) {
-        return res.status(400).json({ error: 'As senhas não conferem' });
+  if (senha !== confirmarSenha) {
+    return res.status(400).json({ error: 'As senhas não conferem' });
+  }
+
+  try {
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ error: 'Email já cadastrado' });
     }
 
-    try {
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ error: 'Email já cadastrado' });
-        }
+    const hashedPassword = await bcrypt.hash(senha, 10);
+    const newUser = new User({
+      nome,
+      email,
+      senha: hashedPassword,
+      tipo,
+    });
 
-        const hashedPassword = await bcrypt.hash(senha, 10);
-
-        const newUser = new User({
-            nome,
-            email,
-            senha: hashedPassword,
-            tipo,
-        });
-
-        await newUser.save();
-        return res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
-    } catch (error) {
-        console.error('Erro ao cadastrar o usuário:', error);
-        return res.status(500).json({ error: 'Erro ao cadastrar usuário' });
-    }
+    await newUser.save();
+    return res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao cadastrar usuário' });
+  }
 };
 
 // Função para login de usuário
 const loginUser = async (req, res) => {
-    const { email, senha } = req.body;
+  const { email, senha } = req.body;
 
-    try {
-        // Verificar se o usuário existe
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ error: 'Usuário não encontrado' });
-        }
-
-        // Comparar senha
-        const passwordMatch = await bcrypt.compare(senha, user.senha);
-        if (!passwordMatch) {
-            return res.status(400).json({ error: 'Senha incorreta' });
-        }
-
-        // Gerar o token JWT
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
-        // Retornar o token com a resposta
-        return res.status(200).json({ message: 'Login bem-sucedido', token });
-    } catch (error) {
-        console.error('Erro no login:', error);  // Adicionando log para depuração
-        return res.status(500).json({ error: 'Erro ao realizar login' });
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
     }
+
+    const passwordMatch = await bcrypt.compare(senha, user.senha);
+    if (!passwordMatch) {
+      return res.status(400).json({ error: 'Senha incorreta' });
+    }
+
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    return res.status(200).json({ message: 'Login bem-sucedido', token });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao realizar login' });
+  }
 };
 
 // Função para autenticação via ORCID
 const orcidLogin = async (req, res) => {
-  const { code } = req.body;
+  const { orcidToken } = req.body;
 
   try {
-    const tokenRes = await axios.post('https://orcid.org/oauth/token', null, {
-      params: {
-        client_id: process.env.ORCID_CLIENT_ID,
-        client_secret: process.env.ORCID_CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: process.env.ORCID_REDIRECT_URI,
-      },
-      headers: { 'Accept': 'application/json' }
-    });
-
-    const { access_token, orcid } = tokenRes.data;
-
-    const response = await axios.get(`https://pub.orcid.org/v3.0/${orcid}/person`, {
+    const response = await axios.get(`https://pub.orcid.org/v3.0/${orcidToken}/person`, {
       headers: {
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${orcidToken}`,
         'Accept': 'application/json',
       }
     });
 
+    const orcidId = response.data.orcidIdentifier.path;
 
-    let user = await User.findOne({ orcidId: orcid });
+    let user = await User.findOne({ orcidId });
     if (!user) {
-      const given = response.data.name?.['given-names']?.value || '';
-      const family = response.data.name?.['family-name']?.value || '';
       user = new User({
-        nome: `${given} ${family}`.trim(),
-        orcidId: orcid,
+        nome: response.data.name.givenNames + ' ' + response.data.name.familyName,
+        orcidId,
         tipo: 'pesquisador',
       });
       await user.save();
