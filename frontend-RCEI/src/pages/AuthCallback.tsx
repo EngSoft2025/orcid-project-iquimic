@@ -17,14 +17,12 @@ export default function AuthCallback() {
             }
 
             try {
-                const res = await fetch("http://localhost:5000/api/auth/orcid", {
+                const res = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/auth/orcid`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                        code,
-                    }),
+                    body: JSON.stringify({ code }),
                 });
 
                 const data = await res.json();

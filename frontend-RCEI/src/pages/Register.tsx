@@ -17,10 +17,10 @@ export default function RegisterPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-        if (e.target.name === "confirmarSenha"){
+        if (e.target.name === "confirmarSenha") {
             setSenhaDiferente(e.target.value !== formData.senha)
         }
-        if (e.target.name === "senha"){
+        if (e.target.name === "senha") {
             setSenhaDiferente(e.target.value !== formData.confirmarSenha)
         }
     };
@@ -33,7 +33,7 @@ export default function RegisterPage() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/register', {
+            const response = await fetch(import.meta.env.VITE_BACK_BASE_URL + '/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,14 +67,14 @@ export default function RegisterPage() {
             {/* Navbar */}
             <nav className="bg-white shadow-md">
                 <div className="container mx-auto py-4 px-4">
-                <div className="flex items-center justify-between">
-                    <Link to="/" className="text-xl font-bold text-gray-800">RCEI - Repositório Ciectífico e Educacional Integrado</Link>
-                    <div>
-                    <Link to="/contact" className="mr-4 text-gray-700 hover:text-gray-900">Contato</Link>
-                    <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">Entrar</Link>
-                    <Link to="/register" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Cadastre-se</Link>
+                    <div className="flex items-center justify-between">
+                        <Link to="/" className="text-xl font-bold text-gray-800">RCEI - Repositório Ciectífico e Educacional Integrado</Link>
+                        <div>
+                            <Link to="/contact" className="mr-4 text-gray-700 hover:text-gray-900">Contato</Link>
+                            <Link to="/login" className="mr-4 text-gray-700 hover:text-gray-900">Entrar</Link>
+                            <Link to="/register" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Cadastre-se</Link>
+                        </div>
                     </div>
-                </div>
                 </div>
             </nav>
 
