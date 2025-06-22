@@ -1,5 +1,5 @@
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchResearchers, searchProjects } from "@/services/orcid";
 import { RceiLayout } from "@/components/RceiLayout";
@@ -15,12 +15,36 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
 
+interface TagConfig {
+  label: string;
+  query: string;
+}
+
+const TAGS: TagConfig[] = [
+  { label: "Inteligência Artificial", query: 'keyword:"Inteligência Artificial"' },
+  { label: "Educação", query: 'keyword:"Educação"' },
+  { label: "Data Mining", query: 'keyword:"Data Mining"' },
+  {
+    label: "Universidade de São Paulo",
+    query: 'affiliation-org-name:"Universidade de São Paulo"',
+  },
+  { label: "Machine Learning", query: 'keyword:"Machine Learning"' },
+];
+
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [searchParams] = useSearchParams();
   const [shouldFetch, setShouldFetch] = useState(false);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
+
+  const finalQuery = useMemo(() => {
+    const tagQuery = TAGS.filter((t) => activeTags.includes(t.label))
+      .map((t) => t.query)
+      .join(" ");
+    return [searchQuery, tagQuery].filter(Boolean).join(" ");
+  }, [searchQuery, activeTags]);
 
   const {
     data,
@@ -28,9 +52,9 @@ const Search = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["search", searchQuery],
-    queryFn: () => searchResearchers(searchQuery),
-    enabled: shouldFetch && !!searchQuery,
+    queryKey: ["search", finalQuery],
+    queryFn: () => searchResearchers(finalQuery),
+    enabled: shouldFetch && finalQuery.trim().length > 0,
   });
 
   const {
@@ -51,6 +75,12 @@ const Search = () => {
       setShouldFetch(true);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (shouldFetch && finalQuery.trim()) {
+      refetch();
+    }
+  }, [finalQuery]);
 
   const results = (data as any)?.["expanded-result"] ?? [];
   const publications = results.flatMap((r: any) => {
@@ -79,7 +109,7 @@ const Search = () => {
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
+    if (finalQuery.trim()) {
       setShouldFetch(true);
       if (filter === "projects") {
         refetchProjects();
@@ -129,21 +159,23 @@ const Search = () => {
           </form>
           
           <div className="flex flex-wrap gap-2 mt-4">
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
-              Inteligência Artificial
-            </Badge>
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
-              Educação
-            </Badge>
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
-              Data Mining
-            </Badge>
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
-              Universidade de São Paulo
-            </Badge>
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50">
-              Machine Learning
-            </Badge>
+            {TAGS.map((tag) => (
+              <Badge
+                key={tag.label}
+                variant={activeTags.includes(tag.label) ? "default" : "outline"}
+                onClick={() => {
+                  setActiveTags((prev) =>
+                    prev.includes(tag.label)
+                      ? prev.filter((t) => t !== tag.label)
+                      : [...prev, tag.label]
+                  );
+                  setShouldFetch(true);
+                }}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                {tag.label}
+              </Badge>
+            ))}
           </div>
         </div>
         
