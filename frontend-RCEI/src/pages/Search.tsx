@@ -1,6 +1,6 @@
 import { FormEvent, useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { searchResearchers, searchProjects } from "@/services/orcid";
+import { searchResearchers, searchProjects, getWorks, getFundings } from "@/services/orcid"; // Importe as funções getWorks e getFundings
 import { RceiLayout } from "@/components/RceiLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,11 +35,21 @@ const TAGS: TagConfig[] = [
 
 type Filter = "all" | "researchers" | "publications" | "projects";
 
+interface Researcher {
+  "orcid-id": string;
+  "given-names": string;
+  "family-names": string;
+  "institution-name"?: string | string[];
+}
+
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [shouldFetch, setShouldFetch] = useState(false);
   const [activeTags, setActiveTags] = useState<string[]>([]);
+
+  const [selectedResearcher, setSelectedResearcher] = useState<Researcher | null>(null); // Armazena o pesquisador selecionado
+  const [researcherOrcid, setResearcherOrcid] = useState<string | null>(null); // Armazena o orcid do pesquisador selecionado
 
   // Monta a query combinando texto e tags
   const finalQuery = useMemo(() => {
@@ -59,6 +69,20 @@ export default function Search() {
     queryKey: ["search-projects", finalQuery],
     queryFn: () => searchProjects(finalQuery),
     enabled: shouldFetch && filter === "projects" && finalQuery.trim().length > 0,
+  });
+
+  // Novo: React Query para buscar as obras do pesquisador selecionado
+  const worksQuery = useQuery({
+    queryKey: ["researcher-works", researcherOrcid],
+    queryFn: () => getWorks(researcherOrcid),
+    enabled: !!researcherOrcid, // Só busca se tiver um ORCID ID selecionado
+  });
+
+  // Novo: React Query para buscar os fundings do pesquisador selecionado
+    const fundingsQuery = useQuery({
+    queryKey: ["researcher-fundings", researcherOrcid],
+    queryFn: () => getFundings(researcherOrcid),
+    enabled: !!researcherOrcid, // Só busca se tiver um ORCID ID selecionado
   });
 
   // Dispara busca inicial pelo parâmetro ?q=
@@ -85,7 +109,7 @@ export default function Search() {
   }
 
   // Dados extraídos
-  const results = resQ.data?.["expanded-result"] ?? [];
+  const results = (resQ.data?.["expanded-result"] ?? []) as Researcher[];
   const filteredResults = (filter === "researchers" || filter === "all") ? results : [];
 
   const publications = results.flatMap((r: any, i: number) =>
@@ -111,6 +135,25 @@ export default function Search() {
       : [],
   }));
   const filteredProjects = (filter === "projects" || filter === "all") ? projects : [];
+
+  // Função para lidar com a seleção de um pesquisador
+  const handleSelectResearcher = (researcher: Researcher) => {
+    setSelectedResearcher(researcher);
+    setResearcherOrcid(researcher["orcid-id"]); // Define o ORCID ID
+  };
+
+  // Função para contar itens em um array ou retornar 0 se não for array ou se for undefined
+  const getItemCount = (data: any): number => {
+    return Array.isArray(data) ? data.length : 0;
+  };
+
+  // Obtém as obras e os fundings (para facilitar a contagem)
+  const worksData = worksQuery.data;
+  const fundingsData = fundingsQuery.data;
+
+  // Conta as obras e os fundings
+  const worksCount = getItemCount(worksData);
+  const fundingsCount = getItemCount(fundingsData);
 
   return (
     <>
@@ -176,6 +219,45 @@ export default function Search() {
           </div>
         </div>
 
+        {/* Exibe informações do pesquisador selecionado */}
+        {selectedResearcher && (
+          <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <h2 className="text-xl font-bold mb-4">
+              Pesquisador Selecionado: {selectedResearcher["given-names"]} {selectedResearcher["family-names"]}
+            </h2>
+            <p>ORCID ID: {selectedResearcher["orcid-id"]}</p>
+
+             {/* Seções de Publicações e Projetos (Fundings) */}
+            <h3 className="text-lg font-semibold mt-4">Publicações ({worksCount})</h3>
+            {worksQuery.isLoading && <p>Carregando publicações...</p>}
+            {worksQuery.isError && <p>Erro ao carregar publicações.</p>}
+            {/* Verifica se worksQuery.data é um array antes de usar .map */}
+            {worksQuery.data && Array.isArray(worksQuery.data) ? (
+                <ul>
+                {worksQuery.data.map((work: any) => (
+                    <li key={work.id}>{work.title}</li> // Ajuste conforme a estrutura real dos dados
+                ))}
+                </ul>
+            ) : (
+                <p>Nenhuma publicação encontrada.</p>
+            )}
+
+            <h3 className="text-lg font-semibold mt-4">Projetos (Fundings) ({fundingsCount})</h3>
+            {fundingsQuery.isLoading && <p>Carregando projetos...</p>}
+            {fundingsQuery.isError && <p>Erro ao carregar projetos.</p>}
+            {/* Verifica se fundingsQuery.data é um array antes de usar .map */}
+            {fundingsQuery.data && Array.isArray(fundingsQuery.data) ? (
+                <ul>
+                {fundingsQuery.data.map((funding: any) => (
+                    <li key={funding.id}>{funding.title}</li> // Ajuste conforme a estrutura real dos dados
+                ))}
+                </ul>
+            ) : (
+                <p>Nenhum projeto encontrado.</p>
+            )}
+          </div>
+        )}
+
         <Tabs defaultValue="researchers" className="w-full">
           <TabsList>
             <TabsTrigger value="researchers" className="flex items-center gap-1">
@@ -200,7 +282,7 @@ export default function Search() {
             )}
             {!resQ.isLoading && !resQ.isError &&
               filteredResults.map(r => (
-                <Card key={r["orcid-id"]} className="hover:bg-muted/10 cursor-pointer transition-colors">
+                <Card key={r["orcid-id"]} className="hover:bg-muted/10 cursor-pointer transition-colors"  onClick={() => handleSelectResearcher(r)}>
                   <CardContent className="flex items-center gap-4 p-5">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-rcei-green-100 text-rcei-green-700">
@@ -261,7 +343,7 @@ export default function Search() {
                   <CardContent className="p-5">
                     <h3 className="font-medium">{proj.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {proj.start ?? ""}{proj.contributors.length > 0 && ` – ${proj.contributors.join(", ")}`}
+                      {proj.start ?? ""}{proj.contributors.length > 0 && `– ${proj.contributors.join(", ")}`}
                     </p>
                   </CardContent>
                 </Card>

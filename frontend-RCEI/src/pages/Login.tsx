@@ -20,7 +20,7 @@ export default function LoginPage() {
   // Se já estiver logado, redireciona para o dashboard
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/search");
     }
 
     // Ajustar o tema quando o componente for montado
