@@ -87,7 +87,7 @@ export default function LoginPage() {
     const params = new URLSearchParams({
       client_id: VITE_ORCID_CLIENT_ID,
       response_type: "code", // Usando 'code' ao invés de 'token', para garantir o fluxo OAuth adequado
-      scope: "/authenticate",
+      scope: "/read-limited",
       redirect_uri: VITE_ORCID_REDIRECT_URI,
     });
 

@@ -30,7 +30,7 @@ export async function searchProjects(query: string) {
 
 // Função para obter as publicações (works) de um pesquisador ORCID
 export async function getWorks() {
-  const orcid = '0000-0003-1574-0784'
+  const orcid = '0000-0002-0435-3992'
   const response = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/works?orcidId=${orcid}`);
 
   if (!response.ok) {
@@ -43,7 +43,7 @@ export async function getWorks() {
 
 // Função para obter o financiamento de um pesquisador ORCID
 export async function getFundings() {
-  const orcid = '0000-0003-1574-0784'
+  const orcid = '0000-0002-0435-3992'
   const response = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/fundings?orcidId=${orcid}`);
 
   if (!response.ok) {
@@ -54,7 +54,7 @@ export async function getFundings() {
 }
 
 export async function getReviews() {
-  const orcid = '0000-0003-1574-0784'
+  const orcid = '0000-0002-0435-3992'
   const response = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/reviews?orcidId=${orcid}`);
 
   if (!response.ok) {
@@ -65,8 +65,19 @@ export async function getReviews() {
 }
 
 export async function getEmployments() {
-  const orcid = '0000-0003-1574-0784'
+  const orcid = '0000-0002-0435-3992'
   const response = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/employments?orcidId=${orcid}`);
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar projetos (fundings) do ORCID');
+  }
+
+  return response.json();
+}
+
+export async function getAllInfo() {
+  const orcid = '0000-0002-0435-3992'
+  const response = await fetch(`${import.meta.env.VITE_BACK_BASE_URL}/info?orcidId=${orcid}`);
 
   if (!response.ok) {
     throw new Error('Erro ao buscar projetos (fundings) do ORCID');
