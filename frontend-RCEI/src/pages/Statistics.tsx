@@ -36,6 +36,7 @@ export default function Statistics() {
     async function loadData() {
       try {
         const resp = await getAllInfo();
+        console.log(resp, 'asd')
         setData(resp);
 
         const worksGroups = resp["activities-summary"]?.works?.group || [];

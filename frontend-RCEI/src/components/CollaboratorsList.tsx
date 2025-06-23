@@ -1,17 +1,17 @@
 
 import { useState } from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { 
-  ChevronRight, 
-  ChevronLeft, 
+import {
+  ChevronRight,
+  ChevronLeft,
   Users,
   Mail,
   ExternalLink
@@ -101,7 +101,7 @@ export function CollaboratorsList() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(mockCollaborators.length / itemsPerPage);
-  
+
   const displayedCollaborators = mockCollaborators.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage
