@@ -123,9 +123,6 @@ export function CollaboratorsList() {
           <Users className="h-5 w-5 text-rcei-green-500" />
           Colaboradores
         </h2>
-        <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">
-          Adicionar Colaborador
-        </Button>
       </div>
 
       <div className="border rounded-md">
