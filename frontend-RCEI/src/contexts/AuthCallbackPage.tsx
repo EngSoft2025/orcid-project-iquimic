@@ -7,18 +7,31 @@ export default function AuthCallbackPage() {
   const { login } = useAuth();
 
   useEffect(() => {
-    // Captura o token da URL (o ORCID retorna como um fragmento na URL)
     const hash = window.location.hash;
     const token = new URLSearchParams(hash.replace("#", "?")).get("access_token");
 
     if (token) {
-      // Armazenar o token no contexto de autenticação
-      login(token);
-
-      // Redireciona para o dashboard após o login bem-sucedido
-      navigate("/dashboard");
+      // Buscar ORCID iD do usuário com o token
+      fetch("https://orcid.org/oauth/userinfo", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json"
+        }
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Erro ao buscar dados do usuário");
+          return res.json();
+        })
+        .then((data) => {
+          const orcidId = data.sub; // O ORCID iD vem no campo "sub"
+          login(token, orcidId);
+          navigate("/dashboard");
+        })
+        .catch(() => {
+          alert("Erro ao obter dados do usuário ORCID.");
+          navigate("/login");
+        });
     } else {
-      // Se não encontrar o token, redireciona para a tela de login
       alert("Erro ao obter o token do ORCID.");
       navigate("/login");
     }

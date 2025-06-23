@@ -28,7 +28,7 @@ export default function AuthCallback() {
                 const data = await res.json();
 
                 if (res.ok) {
-                    login(data.token);
+                    login(data.token, data.orcidId);
                     navigate("/dashboard");
                 } else {
                     console.error(data.error);

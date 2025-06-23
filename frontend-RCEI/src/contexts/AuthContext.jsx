@@ -18,9 +18,10 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = token !== null;
 
   // Função de login, que armazena o token e atualiza o estado
-  const login = (newToken) => {
+  const login = (newToken, orcidId = null) => {
     setOrcidToken(newToken); // Armazena o token no localStorage
     setToken(newToken); // Atualiza o estado com o novo token
+    localStorage.setItem('selectedResearcherOrcid', orcidId);
   };
 
   // Função de logout, que remove o token e limpa o estado

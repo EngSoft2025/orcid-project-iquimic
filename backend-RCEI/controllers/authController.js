@@ -51,6 +51,7 @@ const loginUser = async (req, res) => {
   try {
     // Verificar se o usuário existe
     const user = await User.findOne({ email });
+    console.log(user, 'user')
     if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
@@ -65,7 +66,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
 
     // Retornar o token com a resposta
-    return res.status(200).json({ message: 'Login bem-sucedido', token });
+    return res.status(200).json({ message: 'Login bem-sucedido', token, orcidId: user?.orcidId || null });
   } catch (error) {
     console.error('Erro no login:', error);  // Adicionando log para depuração
     return res.status(500).json({ error: 'Erro ao realizar login' });
@@ -116,7 +117,7 @@ const orcidLogin = async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id, orcidToken: access_token, orcidId: orcid }, JWT_SECRET, { expiresIn: '1h' });
-    return res.status(200).json({ message: 'Login ORCID bem-sucedido', token });
+    return res.status(200).json({ message: 'Login ORCID bem-sucedido', token, orcidId: orcid });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao autenticar via ORCID', message: error.message });

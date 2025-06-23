@@ -5,11 +5,20 @@ export function PersonalInfo() {
     const [person, setPerson] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [researcherOrcid, setResearcherOrcid] = useState<string | null>(null);
+    useEffect(() => {
+        const orcid = localStorage.getItem("selectedResearcherOrcid");
+        if (orcid) {
+            setResearcherOrcid(orcid);
+        }
+    }, []);
+
 
     useEffect(() => {
+        if (!researcherOrcid) return;
         async function fetch() {
             try {
-                const data = await getAllInfo();
+                const data = await getAllInfo(researcherOrcid);
                 setPerson(data.person);
                 setError(null);
             } catch {
@@ -19,7 +28,7 @@ export function PersonalInfo() {
             }
         }
         fetch();
-    }, []);
+    }, [researcherOrcid]);
 
     if (loading) return <p>Carregando dados pessoais...</p>;
     if (error) return <p className="text-red-500">{error}</p>;

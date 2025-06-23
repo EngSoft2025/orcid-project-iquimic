@@ -34,10 +34,6 @@ const Index = () => {
           </div>
 
           <ReviewsList />
-
-          <div>
-            <ProjectsTable />
-          </div>
         </div>
       </RceiLayout>
     </>

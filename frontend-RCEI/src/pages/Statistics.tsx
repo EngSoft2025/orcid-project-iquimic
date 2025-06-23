@@ -32,10 +32,19 @@ export default function Statistics() {
   >([]);
   const [totalPublications, setTotalPublications] = useState(0);
 
+  const [researcherOrcid, setResearcherOrcid] = useState<string | null>(null);
   useEffect(() => {
+    const orcid = localStorage.getItem("selectedResearcherOrcid");
+    if (orcid) {
+      setResearcherOrcid(orcid);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!researcherOrcid) return;
     async function loadData() {
       try {
-        const resp = await getAllInfo();
+        const resp = await getAllInfo(researcherOrcid);
         console.log(resp, 'asd')
         setData(resp);
 
@@ -94,9 +103,17 @@ export default function Statistics() {
     }
 
     loadData();
-  }, []);
+  }, [researcherOrcid]);
 
-  if (loading) return <div>Carregando dados...</div>;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+        <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-muted-foreground text-sm">Carregando estatísticas do ORCID...</p>
+      </div>
+    );
+  }
+
   if (error) return <div className="text-red-600">{error}</div>;
 
   return (

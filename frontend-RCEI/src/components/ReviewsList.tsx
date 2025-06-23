@@ -33,10 +33,19 @@ export function ReviewsList() {
   const [filter, setFilter] = useState<string | null>(null);
   const itemsPerPage = 5;
 
+  const [researcherOrcid, setResearcherOrcid] = useState<string | null>(null);
   useEffect(() => {
+    const orcid = localStorage.getItem("selectedResearcherOrcid");
+    if (orcid) {
+      setResearcherOrcid(orcid);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!researcherOrcid) return;
     async function fetchData() {
       try {
-        const data = await getReviews();
+        const data = await getReviews(researcherOrcid);
 
         const parsed: Review[] = data.group.flatMap((g: any) =>
           g["peer-review-group"]?.flatMap((prg: any) =>
@@ -64,7 +73,7 @@ export function ReviewsList() {
     }
 
     fetchData();
-  }, []);
+  }, [researcherOrcid]);
 
   const filteredReviews = filter
     ? reviews.filter((review) => review.reviewType === filter)

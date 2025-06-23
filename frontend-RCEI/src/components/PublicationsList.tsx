@@ -1,94 +1,91 @@
-
-import { useState } from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import { useEffect, useState } from "react";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { 
-  FileEdit, 
-  Trash2, 
-  Eye, 
-  ChevronRight, 
-  ChevronLeft, 
-  PlusCircle 
+import {
+  ChevronRight, ChevronLeft
 } from "lucide-react";
 import { DashboardCard } from "@/components/ui/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
+import { getWorks } from "@/services/orcid";
 
 interface Publication {
   id: string;
   title: string;
   journal: string;
   year: number;
-  type: "article" | "book" | "conference" | "chapter";
-  citations: number;
+  type: "article" | "book" | "conference" | "chapter" | "other";
+  url?: string | null;  // opcional
 }
 
-// Mock data
-const mockPublications: Publication[] = [
-  {
-    id: "1",
-    title: "A Systematic Review of Educational Data Mining",
-    journal: "IEEE Transactions on Education",
-    year: 2023,
-    type: "article",
-    citations: 12,
-  },
-  {
-    id: "2",
-    title: "Application of Machine Learning in Educational Contexts",
-    journal: "Journal of Educational Technology",
-    year: 2022,
-    type: "article",
-    citations: 8,
-  },
-  {
-    id: "3",
-    title: "Collaborative Learning Environments: A Case Study",
-    journal: "Educational Technology & Society",
-    year: 2023,
-    type: "conference",
-    citations: 5,
-  },
-  {
-    id: "4",
-    title: "Intelligent Tutoring Systems: Design Principles and Applications",
-    journal: "Computers & Education",
-    year: 2021,
-    type: "article",
-    citations: 19,
-  },
-  {
-    id: "5",
-    title: "Learning Analytics: Methods and Challenges",
-    journal: "International Conference on Learning Analytics",
-    year: 2022,
-    type: "conference",
-    citations: 7,
-  },
-];
+const typeMap: Record<string, Publication["type"]> = {
+  "journal-article": "article",
+  "book": "book",
+  "conference-paper": "conference",
+  "book-chapter": "chapter"
+};
 
 export function PublicationsList() {
+  const [publications, setPublications] = useState<Publication[]>([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(mockPublications.length / itemsPerPage);
-  
-  const displayedPublications = mockPublications.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
+
+  const [researcherOrcid, setResearcherOrcid] = useState<string | null>(null);
+  useEffect(() => {
+    const orcid = localStorage.getItem("selectedResearcherOrcid");
+    if (orcid) {
+      setResearcherOrcid(orcid);
+    }
+  }, []);
+
+  const totalPages = Math.ceil(publications.length / itemsPerPage);
+  const displayedPublications = publications.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  useEffect(() => {
+    if (!researcherOrcid) return;
+    async function loadData() {
+      try {
+        const data = await getWorks(researcherOrcid);
+
+        const transformed: Publication[] = (data.group || []).map((group: any, index: number) => {
+          const summary = group["work-summary"]?.[0];
+          const title = summary?.title?.title?.value || "Sem título";
+          const journal = summary?.["journal-title"]?.value || "Não especificado";
+          const year = parseInt(summary?.["publication-date"]?.year?.value) || 0;
+          const typeRaw = summary?.type || "other";
+          const type = typeMap[typeRaw] || "other";
+          const url = summary?.url?.value || null;  // pega a url, se existir
+
+          return {
+            id: summary["put-code"]?.toString() || `${index}`,
+            title,
+            journal,
+            year,
+            type,
+            url,    // adiciona url ao objeto
+          };
+        });
+
+
+        setPublications(transformed);
+      } catch (err) {
+        console.error("Erro ao carregar publicações", err);
+      }
+    }
+
+    loadData();
+  }, [researcherOrcid]);
 
   const typeColors = {
     article: "bg-blue-100 text-blue-800",
     book: "bg-green-100 text-green-800",
     conference: "bg-amber-100 text-amber-800",
     chapter: "bg-purple-100 text-purple-800",
+    other: "bg-gray-100 text-gray-800"
   };
 
   return (
@@ -101,72 +98,7 @@ export function PublicationsList() {
               <DialogTitle>Adicionar Nova Publicação</DialogTitle>
             </DialogHeader>
             <form className="space-y-4 py-4">
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <label htmlFor="title" className="text-sm font-medium">Título</label>
-                  <input 
-                    id="title" 
-                    className="w-full p-2 border rounded-md" 
-                    placeholder="Título da publicação" 
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <label htmlFor="journal" className="text-sm font-medium">Periódico/Evento</label>
-                    <input 
-                      id="journal" 
-                      className="w-full p-2 border rounded-md" 
-                      placeholder="Nome do periódico ou evento" 
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <label htmlFor="year" className="text-sm font-medium">Ano</label>
-                    <input 
-                      id="year" 
-                      type="number" 
-                      className="w-full p-2 border rounded-md" 
-                      placeholder="Ano de publicação" 
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <label htmlFor="type" className="text-sm font-medium">Tipo</label>
-                    <select id="type" className="w-full p-2 border rounded-md">
-                      <option value="article">Artigo</option>
-                      <option value="conference">Conferência</option>
-                      <option value="book">Livro</option>
-                      <option value="chapter">Capítulo</option>
-                    </select>
-                  </div>
-                  <div className="grid gap-2">
-                    <label htmlFor="citations" className="text-sm font-medium">Citações</label>
-                    <input 
-                      id="citations" 
-                      type="number" 
-                      className="w-full p-2 border rounded-md" 
-                      placeholder="Número de citações" 
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="abstract" className="text-sm font-medium">Resumo</label>
-                  <textarea 
-                    id="abstract" 
-                    className="w-full p-2 border rounded-md" 
-                    rows={4}
-                    placeholder="Resumo da publicação" 
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="authors" className="text-sm font-medium">Autores</label>
-                  <input 
-                    id="authors" 
-                    className="w-full p-2 border rounded-md" 
-                    placeholder="Lista de autores separados por vírgula" 
-                  />
-                </div>
-              </div>
+              {/* formulário omitido */}
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" type="button">Cancelar</Button>
                 <Button className="bg-rcei-green-500 hover:bg-rcei-green-600" type="button">Salvar</Button>
@@ -184,35 +116,42 @@ export function PublicationsList() {
               <TableHead>Periódico</TableHead>
               <TableHead>Ano</TableHead>
               <TableHead>Tipo</TableHead>
-              <TableHead>Citações</TableHead>
-              <TableHead className="w-[100px]">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayedPublications.map((pub) => (
               <TableRow key={pub.id}>
-                <TableCell className="font-medium">{pub.title}</TableCell>
+                <TableCell className="font-medium">
+                  {pub.url ? (
+                    <a
+                      href={pub.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-rcei-green-500 hover:underline"
+                    >
+                      {pub.title}
+                    </a>
+                  ) : (
+                    pub.title
+                  )}
+                </TableCell>
                 <TableCell>{pub.journal}</TableCell>
-                <TableCell>{pub.year}</TableCell>
+                <TableCell>{pub.year || "N/A"}</TableCell>
                 <TableCell>
                   <Badge className={typeColors[pub.type]} variant="outline">
-                    {pub.type === "article" && "Artigo"}
-                    {pub.type === "book" && "Livro"}
-                    {pub.type === "conference" && "Conferência"}
-                    {pub.type === "chapter" && "Capítulo"}
+                    {{
+                      article: "Artigo",
+                      book: "Livro",
+                      conference: "Conferência",
+                      chapter: "Capítulo",
+                      other: "Outro"
+                    }[pub.type]}
                   </Badge>
-                </TableCell>
-                <TableCell>{pub.citations}</TableCell>
-                <TableCell>
-                  <div className="flex space-x-1">
-                    <Button variant="ghost" size="icon">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </div>
 
