@@ -96,11 +96,6 @@ export function PublicationsList() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Publicações Recentes</h2>
         <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-rcei-green-500 hover:bg-rcei-green-600">
-              <PlusCircle className="mr-2 h-4 w-4" /> Adicionar
-            </Button>
-          </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Adicionar Nova Publicação</DialogTitle>
@@ -212,12 +207,6 @@ export function PublicationsList() {
                   <div className="flex space-x-1">
                     <Button variant="ghost" size="icon">
                       <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <FileEdit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </TableCell>
