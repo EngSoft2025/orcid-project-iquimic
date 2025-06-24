@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Helmet } from "react-helmet";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Settings() {
   const [userData, setUserData] = useState({
@@ -17,7 +16,7 @@ export default function Settings() {
     department: "",
     position: "",
     areas: "",
-    orcid: "",
+    orcid: "", // Incluindo o campo ORCID
     notificationsEnabled: true,
     darkMode: false,
     publicProfile: true,
@@ -49,7 +48,7 @@ export default function Settings() {
             department: data.department || "",
             position: data.position || "",
             areas: data.researchAreas || "",
-            orcid: data.orcid || "",
+            orcid: data.orcid || "",  // Garantindo que o ORCID seja carregado
             notificationsEnabled: data.notificationsEnabled,
             darkMode: data.darkMode,
             publicProfile: data.publicProfile,
@@ -180,6 +179,15 @@ export default function Settings() {
                       id="areas"
                       name="areas"
                       value={userData.areas}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="orcid">ORCID ID</Label>
+                    <Input
+                      id="orcid"
+                      name="orcid"
+                      value={userData.orcid}
                       onChange={handleChange}
                     />
                   </div>

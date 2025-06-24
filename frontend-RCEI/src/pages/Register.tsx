@@ -10,13 +10,13 @@ import { Label } from "@/components/ui/label";    // Certifique-se de importar o
 export default function RegisterPage() {
 
     useEffect(() => {
-    // Ajustar o tema quando o componente for montado
-    const darkModeStatus = localStorage.getItem('darkMode') === 'true';
-    if (darkModeStatus) {
-        document.body.classList.add('dark');
-    } else {
-        document.body.classList.remove('dark');
-    }
+        // Ajustar o tema quando o componente for montado
+        const darkModeStatus = localStorage.getItem('darkMode') === 'true';
+        if (darkModeStatus) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+        }
     }, []);
 
     const navigate = useNavigate();
@@ -33,6 +33,7 @@ export default function RegisterPage() {
         notificationsEnabled: true,
         darkMode: false,
         publicProfile: true,
+        orcidId: "", // Campo para armazenar o ORCID ID
     });
     const [senhaDiferente, setSenhaDiferente] = useState(false);
 
@@ -81,6 +82,7 @@ export default function RegisterPage() {
                     department: formData.department,
                     position: formData.position,
                     areas: formData.areas,
+                    orcidId: formData.orcidId,
                     notificationsEnabled: formData.notificationsEnabled,
                     darkMode: formData.darkMode,
                     publicProfile: formData.publicProfile,
@@ -108,6 +110,7 @@ export default function RegisterPage() {
             department: "",
             position: "",
             areas: "",
+            orcidId: "",
             notificationsEnabled: true,
             darkMode: false,
             publicProfile: true,
@@ -220,6 +223,15 @@ export default function RegisterPage() {
                                             name="areas"
                                             placeholder="Áreas de Pesquisa"
                                             value={formData.areas}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="orcidId"
+                                            placeholder="ORCID ID"
+                                            value={formData.orcidId}
                                             onChange={handleChange}
                                             required
                                             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"

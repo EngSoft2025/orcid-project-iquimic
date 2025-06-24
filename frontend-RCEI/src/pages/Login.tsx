@@ -7,7 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Obtenção dos valores de ambiente
-const { VITE_BACK_BASE_URL } = import.meta.env;
+const { VITE_ORCID_CLIENT_ID, VITE_ORCID_REDIRECT_URI, VITE_BACK_BASE_URL, VITE_ORCID_BASE_URL } = import.meta.env;
 
 export default function LoginPage() {
   const navigate = useNavigate();  // Hook para navegação
@@ -81,16 +81,63 @@ export default function LoginPage() {
     setFormData({ email: "", senha: "" });
   };
 
+  const handleOrcidLogin = () => {
+    // Criação da URL de autenticação para o ORCID
+    const params = new URLSearchParams({
+      client_id: VITE_ORCID_CLIENT_ID,
+      response_type: "code", // Usando 'code' ao invés de 'token', para garantir o fluxo OAuth adequado
+      scope: "/authenticate",
+      redirect_uri: VITE_ORCID_REDIRECT_URI,
+    });
+
+    // Redirecionamento para a URL de autenticação ORCID
+    window.location.assign(`${VITE_ORCID_BASE_URL}/oauth/authorize?${params.toString()}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-gray-900 dark:text-white">
       <main className="flex-grow flex items-center justify-center p-8">
-        <div className="w-full max-w-md"> {/* Centralizando o card */}
+        <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8">
+          {/* Card ORCID */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full md:w-1/2"
+          >
+            <Card className="rounded-2xl shadow-lg border border-gray-200">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-semibold text-gray-800">
+                  Entrar com ORCID
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <p className="text-gray-600 text-sm text-center mb-6">
+                  Para acessar o sistema RCEI, conecte-se com sua conta ORCID.
+                </p>
+                <Button
+                  className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-xl"
+                  onClick={handleOrcidLogin}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Conectar com ORCID
+                </Button>
+                <div className="mt-6 text-center text-xs text-gray-500">
+                  ORCID é uma plataforma que permite identificar pesquisadores de forma única.
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Separador (apenas em telas maiores) */}
+          <div className="hidden md:flex items-center justify-center text-gray-400 font-semibold">OU</div>
+
           {/* Card Formulário Manual */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="w-full"
+            className="w-full md:w-1/2"
           >
             <Card className="rounded-2xl shadow-lg border border-gray-200">
               <CardHeader className="text-center">

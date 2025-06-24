@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Função para registro de usuário
 const registerUser = async (req, res) => {
-  const { nome, email, senha, confirmarSenha, tipo, institution, department, position, areas, notificationsEnabled, darkMode, publicProfile } = req.body;
+  const { nome, email, senha, confirmarSenha, tipo, institution, department, position, areas, orcidId, notificationsEnabled, darkMode, publicProfile } = req.body;
 
   if (senha !== confirmarSenha) {
     return res.status(400).json({ error: 'As senhas não conferem' });
@@ -31,6 +31,7 @@ const registerUser = async (req, res) => {
       department,
       position,
       areas,
+      orcidId,
       notificationsEnabled,
       darkMode,
       publicProfile,
@@ -149,8 +150,8 @@ const getUserData = async (req, res) => {
       institution: user.institution,
       department: user.department,
       position: user.position,
-      researchAreas: user.researchAreas,
-      orcid: user.orcid,
+      researchAreas: user.areas,
+      orcid: user.orcidId,
       notificationsEnabled: user.notificationsEnabled,
       darkMode: user.darkMode,
       publicProfile: user.publicProfile,
